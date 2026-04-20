@@ -142,7 +142,7 @@ export default function LoginPage() {
                   disabled={isLoading}
                   className="w-full h-11 sm:h-12 2xl:h-[52px] rounded-xl 2xl:rounded-2xl bg-gradient-to-b from-[#1f2335] to-[#0d1020] text-white text-sm sm:text-[15px] font-semibold shadow-[0_8px_20px_rgba(17,24,39,0.45)] hover:from-[#22283f] hover:to-[#10142b] disabled:opacity-60 disabled:cursor-not-allowed transition"
                 >
-                  {isLoading ? "Signing in..." : "Get Started"}
+                  {isLoading ? "Signing in..." : "Continue"}
                 </button>
               </form>
 
