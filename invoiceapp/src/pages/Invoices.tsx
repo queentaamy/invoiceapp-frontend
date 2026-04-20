@@ -12,7 +12,7 @@ import clsx from "clsx";
 function formatCurrency(val: number) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "USD",
+    currency: "GHS",
     maximumFractionDigits: 0,
   }).format(val);
 }
