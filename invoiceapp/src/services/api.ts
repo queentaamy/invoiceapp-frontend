@@ -19,6 +19,7 @@ const configuredBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim();
 const BASE_URL = configuredBaseUrl
   ? configuredBaseUrl.replace(/\/+$/, "")
   : "/api";
+const API = BASE_URL;
 const TOKEN_KEY = "invoiceflow_token";
 
 // ── Helpers ──────────────────────────────────
@@ -74,12 +75,52 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 
 export const authService = {
   async login(credentials: AuthCredentials): Promise<AuthUser> {
-    const data = await request<AuthUser>("/auth/login", {
+    const response = await fetch(`${API}/login`, {
       method: "POST",
-      body: JSON.stringify(credentials),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: credentials.email,
+        password: credentials.password,
+      }),
     });
-    setToken(data.token);
-    return data;
+
+    const data = await response
+      .json()
+      .catch(() => ({}) as Record<string, unknown>);
+
+    if (!response.ok) {
+      throw new Error(
+        typeof data?.detail === "string" ? data.detail : "Login failed",
+      );
+    }
+
+    const accessToken =
+      typeof data?.access_token === "string"
+        ? data.access_token
+        : typeof data?.token === "string"
+          ? data.token
+          : null;
+
+    if (!accessToken) {
+      throw new Error("Login failed: no access token returned.");
+    }
+
+    setToken(accessToken);
+    localStorage.setItem("token", accessToken);
+
+    const authUser: AuthUser = {
+      id: typeof data?.id === "number" ? data.id : 0,
+      name:
+        typeof data?.name === "string"
+          ? data.name
+          : credentials.email.split("@")[0],
+      email: typeof data?.email === "string" ? data.email : credentials.email,
+      token: accessToken,
+    };
+
+    return authUser;
   },
 
   async signup(payload: SignupPayload): Promise<AuthUser> {
