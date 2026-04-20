@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Mail, Lock, User, ArrowRight } from "lucide-react";
+import { Mail, Lock, User, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useNotification } from "../context/NotificationContext";
 import { Button } from "../components/ui/Button";
@@ -12,6 +12,8 @@ export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { signup, isAuthenticated } = useAuth();
   const { error, success } = useNotification();
@@ -88,20 +90,44 @@ export default function SignupPage() {
           />
           <Input
             label="Password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             placeholder="Min. 8 characters"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             leftAddon={<Lock size={14} />}
+            rightAddon={
+              <button
+                type="button"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="text-ink-400 hover:text-ink-600 transition-colors"
+              >
+                {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+              </button>
+            }
             required
           />
           <Input
             label="Confirm password"
-            type="password"
+            type={showConfirmPassword ? "text" : "password"}
             placeholder="Repeat password"
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
             leftAddon={<Lock size={14} />}
+            rightAddon={
+              <button
+                type="button"
+                aria-label={
+                  showConfirmPassword
+                    ? "Hide confirm password"
+                    : "Show confirm password"
+                }
+                onClick={() => setShowConfirmPassword((prev) => !prev)}
+                className="text-ink-400 hover:text-ink-600 transition-colors"
+              >
+                {showConfirmPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+              </button>
+            }
             required
           />
 

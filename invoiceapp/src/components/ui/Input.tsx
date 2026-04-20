@@ -50,7 +50,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             {...props}
           />
           {rightAddon && (
-            <div className="absolute right-3 text-ink-400 pointer-events-none">
+            <div className="absolute right-3 flex items-center text-ink-400">
               {rightAddon}
             </div>
           )}

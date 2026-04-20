@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Lock, Mail } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useNotification } from "../context/NotificationContext";
 import { AppLogo } from "../components/ui/AppLogo";
@@ -8,6 +8,7 @@ import { AppLogo } from "../components/ui/AppLogo";
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { login, isAuthenticated } = useAuth();
   const { error } = useNotification();
@@ -119,13 +120,23 @@ export default function LoginPage() {
                     className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-400"
                   />
                   <input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full h-11 sm:h-12 2xl:h-[52px] rounded-xl 2xl:rounded-2xl bg-white/75 border border-white/80 focus:border-[#2B31E9] focus:ring-2 focus:ring-[#2B31E9]/25 outline-none pl-10 pr-3 text-sm sm:text-[15px] text-ink-800 placeholder:text-ink-400 transition"
+                    className="w-full h-11 sm:h-12 2xl:h-[52px] rounded-xl 2xl:rounded-2xl bg-white/75 border border-white/80 focus:border-[#2B31E9] focus:ring-2 focus:ring-[#2B31E9]/25 outline-none pl-10 pr-10 text-sm sm:text-[15px] text-ink-800 placeholder:text-ink-400 transition"
                     required
                   />
+                  <button
+                    type="button"
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-400 hover:text-ink-600 transition-colors"
+                  >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
                 </div>
 
                 <div className="flex justify-end -mt-1">
