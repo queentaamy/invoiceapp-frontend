@@ -83,7 +83,7 @@ export const authService = {
   },
 
   async signup(payload: SignupPayload): Promise<AuthUser> {
-    const data = await request<AuthUser>("/auth/signup", {
+    const data = await request<AuthUser>("/signup", {
       method: "POST",
       body: JSON.stringify(payload),
     });
