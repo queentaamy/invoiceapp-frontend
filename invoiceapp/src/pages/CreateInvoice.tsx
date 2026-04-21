@@ -83,6 +83,7 @@ export default function CreateInvoicePage() {
       customer_id: Number(customerId),
       items,
       apply_tax: applyTax,
+      status: "unpaid",
       due_date: dueDate || undefined,
       notes: notes || undefined,
     });
@@ -292,7 +293,7 @@ export default function CreateInvoicePage() {
               </Button>
 
               <p className="mt-2 text-center text-xs text-muted-foreground">
-                Invoice will be saved as draft
+                Invoice will be created as unpaid
               </p>
             </div>
           </div>

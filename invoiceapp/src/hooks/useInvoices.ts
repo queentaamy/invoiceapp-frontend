@@ -63,13 +63,15 @@ export function useInvoices() {
             ),
             tax: 0,
             total: 0,
-            status: "draft",
+            status: payload.status ?? "unpaid",
             items: payload.items.map((item, idx) => ({
               id: idx + 1,
               ...item,
               total_price: item.quantity * item.unit_price,
             })),
             created_at: new Date().toISOString(),
+            due_date: payload.due_date,
+            notes: payload.notes,
           };
           newInvoice.tax = payload.apply_tax ? newInvoice.subtotal * 0.15 : 0;
           newInvoice.total = newInvoice.subtotal + newInvoice.tax;

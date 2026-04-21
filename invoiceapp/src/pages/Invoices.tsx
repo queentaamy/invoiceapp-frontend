@@ -6,6 +6,7 @@ import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { StatusBadge, EmptyState, SkeletonRow } from "../components/ui/index";
 import { useInvoices } from "../hooks/useInvoices";
+import { useCustomers } from "../hooks/useCustomers";
 import type { InvoiceStatus } from "../types";
 import clsx from "clsx";
 
@@ -36,24 +37,75 @@ const statusFilters: { label: string; value: string }[] = [
 
 export default function InvoicesPage() {
   const { invoices, isLoading } = useInvoices();
+  const { customers } = useCustomers();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+
+  const customerNameById = useMemo(
+    () => new Map(customers.map((c) => [c.id, c.name])),
+    [customers],
+  );
+
+  const resolveStatus = (invoice: (typeof invoices)[number]): InvoiceStatus => {
+    const raw = (
+      invoice.status ?? (invoice as { payment_status?: string }).payment_status
+    )
+      ?.toString()
+      .toLowerCase();
+
+    if (
+      raw === "paid" ||
+      raw === "unpaid" ||
+      raw === "overdue" ||
+      raw === "draft"
+    ) {
+      return raw;
+    }
+
+    if ((invoice as { is_paid?: boolean }).is_paid === true) {
+      return "paid";
+    }
+
+    return "unpaid";
+  };
+
+  const resolveCreatedDate = (invoice: (typeof invoices)[number]) => {
+    return (
+      invoice.created_at ??
+      (invoice as { createdAt?: string }).createdAt ??
+      (invoice as { date?: string }).date
+    );
+  };
+
+  const resolveDueDate = (invoice: (typeof invoices)[number]) => {
+    return (
+      invoice.due_date ??
+      (invoice as { dueDate?: string }).dueDate ??
+      (invoice as { due?: string }).due
+    );
+  };
 
   const filtered = useMemo(() => {
     return invoices.filter((inv) => {
       const matchSearch =
         inv.invoice_number.toLowerCase().includes(search.toLowerCase()) ||
-        (inv.customer?.name ?? "").toLowerCase().includes(search.toLowerCase());
-      const matchStatus = statusFilter === "all" || inv.status === statusFilter;
+        (inv.customer?.name ?? customerNameById.get(inv.customer_id) ?? "")
+          .toLowerCase()
+          .includes(search.toLowerCase());
+      const matchStatus =
+        statusFilter === "all" || resolveStatus(inv) === statusFilter;
       return matchSearch && matchStatus;
     });
-  }, [invoices, search, statusFilter]);
+  }, [invoices, search, statusFilter, customerNameById]);
 
   const totals = useMemo(
     () => ({
       total: invoices.reduce((s, i) => s + i.total, 0),
       unpaid: invoices
-        .filter((i) => i.status === "unpaid" || i.status === "overdue")
+        .filter((i) => {
+          const status = resolveStatus(i);
+          return status === "unpaid" || status === "overdue";
+        })
         .reduce((s, i) => s + i.total, 0),
     }),
     [invoices],
@@ -176,7 +228,7 @@ export default function InvoicesPage() {
             </div>
 
             <div className="divide-y divide-zinc-200">
-              {filtered.map((inv) => (
+              {filtered.map((inv, index) => (
                 <Link
                   key={inv.id}
                   to={`/invoices/${inv.id}`}
@@ -188,36 +240,36 @@ export default function InvoicesPage() {
                       <FileText size={12} className="text-muted-foreground" />
                     </div>
                     <span className="font-mono text-sm font-medium text-foreground">
-                      {inv.invoice_number}
+                      {`INV-${String(index + 1).padStart(3, "0")}`}
                     </span>
                   </div>
 
                   {/* Customer */}
                   <div className="col-span-3 hidden md:block">
                     <p className="truncate text-sm text-foreground/80">
-                      {inv.customer?.name ?? `#${inv.customer_id}`}
+                      {inv.customer?.name ??
+                        customerNameById.get(inv.customer_id) ??
+                        "Unknown customer"}
                     </p>
                   </div>
 
                   {/* Created date */}
                   <div className="col-span-2 hidden lg:block">
                     <p className="text-sm text-muted-foreground">
-                      {formatDate(inv.created_at)}
+                      {formatDate(resolveCreatedDate(inv))}
                     </p>
                   </div>
 
                   {/* Due date */}
                   <div className="col-span-2 hidden lg:block">
                     <p className="text-sm text-muted-foreground">
-                      {formatDate(inv.due_date)}
+                      {formatDate(resolveDueDate(inv))}
                     </p>
                   </div>
 
                   {/* Status */}
                   <div className="col-span-2">
-                    <StatusBadge
-                      status={(inv.status ?? "draft") as InvoiceStatus}
-                    />
+                    <StatusBadge status={resolveStatus(inv)} />
                   </div>
 
                   {/* Amount + arrow */}
