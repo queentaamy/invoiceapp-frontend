@@ -91,7 +91,6 @@ const data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const fallbackName = user?.email?.split("@")[0] || "Account";
 
   function handleLogout() {
     logout();
@@ -125,7 +124,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarFooter>
         <NavUser
           user={{
-            name: user?.name?.trim() || fallbackName,
+            name: user?.name ?? "User",
             email: user?.email ?? "",
             avatar: "/app-icon.png",
           }}

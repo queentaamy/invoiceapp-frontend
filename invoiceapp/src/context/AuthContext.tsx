@@ -3,6 +3,7 @@ import {
   useContext,
   useState,
   useCallback,
+  useEffect,
   type ReactNode,
 } from "react";
 import type {
@@ -64,6 +65,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return hydrateUserFromStorage();
   });
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (DEMO_MODE || !user?.token) return;
+
+    let cancelled = false;
+
+    void (async () => {
+      try {
+        const profile = await authService.getProfile();
+        if (cancelled) return;
+
+        localStorage.setItem("invoiceflow_profile", JSON.stringify(profile));
+
+        setUser((prev) => {
+          if (!prev) return prev;
+
+          const mergedUser = {
+            ...prev,
+            id: profile.id ?? prev.id,
+            email: profile.email ?? prev.email,
+            name: profile.name ?? prev.name,
+          };
+
+          localStorage.setItem("invoiceflow_user", JSON.stringify(mergedUser));
+          return mergedUser;
+        });
+      } catch {
+        // Keep existing user state if profile refresh fails.
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.token]);
 
   const login = useCallback(async (credentials: AuthCredentials) => {
     if (DEMO_MODE) {
