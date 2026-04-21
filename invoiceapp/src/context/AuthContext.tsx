@@ -26,6 +26,8 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 const DEMO_MODE = import.meta.env.VITE_ENABLE_DEMO_MODE === "true";
+const ACCESS_TOKEN_KEY = "invoiceflow_token";
+const LEGACY_TOKEN_KEY = "token";
 
 const demoUser: AuthUser = {
   id: 1,
@@ -106,6 +108,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await new Promise((r) => setTimeout(r, 800));
       setUser(demoUser);
       localStorage.setItem("invoiceflow_user", JSON.stringify(demoUser));
+      localStorage.setItem(ACCESS_TOKEN_KEY, demoUser.token);
+      localStorage.setItem(LEGACY_TOKEN_KEY, demoUser.token);
       return;
     }
     setIsLoading(true);
@@ -129,6 +133,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setUser(nextUser);
       localStorage.setItem("invoiceflow_user", JSON.stringify(nextUser));
+      localStorage.setItem(ACCESS_TOKEN_KEY, nextUser.token);
+      localStorage.setItem(LEGACY_TOKEN_KEY, nextUser.token);
     } finally {
       setIsLoading(false);
     }
@@ -140,6 +146,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const newUser = { ...demoUser, name: payload.name, email: payload.email };
       setUser(newUser);
       localStorage.setItem("invoiceflow_user", JSON.stringify(newUser));
+      localStorage.setItem(ACCESS_TOKEN_KEY, newUser.token);
+      localStorage.setItem(LEGACY_TOKEN_KEY, newUser.token);
       return;
     }
     setIsLoading(true);
@@ -147,9 +155,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const userData = await authService.signup(payload);
       setUser(userData);
       localStorage.setItem("invoiceflow_user", JSON.stringify(userData));
+      localStorage.setItem(ACCESS_TOKEN_KEY, userData.token);
+      localStorage.setItem(LEGACY_TOKEN_KEY, userData.token);
     } catch (error) {
       setUser(null);
       localStorage.removeItem("invoiceflow_user");
+      localStorage.removeItem(ACCESS_TOKEN_KEY);
+      localStorage.removeItem(LEGACY_TOKEN_KEY);
       throw error;
     } finally {
       setIsLoading(false);
@@ -158,6 +170,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(() => {
     authService.logout();
+    localStorage.removeItem(ACCESS_TOKEN_KEY);
+    localStorage.removeItem(LEGACY_TOKEN_KEY);
     localStorage.removeItem("invoiceflow_user");
     localStorage.removeItem("invoiceflow_profile");
     localStorage.removeItem("invoiceflow_customers");

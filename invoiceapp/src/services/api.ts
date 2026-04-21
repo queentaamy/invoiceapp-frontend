@@ -43,6 +43,7 @@ function setToken(token: string): void {
 
 function removeToken(): void {
   localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem("token");
 }
 
 function findStringField(
