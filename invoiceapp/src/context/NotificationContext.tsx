@@ -9,11 +9,13 @@ import type { Notification } from "../types";
 import { CheckCircle, XCircle, AlertTriangle, Info, X } from "lucide-react";
 
 interface NotificationContextValue {
+  notifications: Notification[];
   notify: (notification: Omit<Notification, "id">) => void;
   success: (title: string, message?: string) => void;
   error: (title: string, message?: string) => void;
   warning: (title: string, message?: string) => void;
   info: (title: string, message?: string) => void;
+  clearAll: () => void;
 }
 
 const NotificationContext = createContext<NotificationContextValue | null>(
@@ -46,6 +48,10 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
   const dismiss = useCallback((id: string) => {
     setNotifications((prev) => prev.filter((n) => n.id !== id));
+  }, []);
+
+  const clearAll = useCallback(() => {
+    setNotifications([]);
   }, []);
 
   const notify = useCallback(
@@ -81,7 +87,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
   return (
     <NotificationContext.Provider
-      value={{ notify, success, error, warning, info }}
+      value={{ notifications, notify, success, error, warning, info, clearAll }}
     >
       {children}
 
