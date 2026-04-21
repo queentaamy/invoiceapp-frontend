@@ -1,13 +1,6 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
-import {
-  FileText,
-  Users,
-  DollarSign,
-  Clock,
-  Plus,
-  ArrowRight,
-} from "lucide-react";
+import { FileText, Users, Clock, Plus, ArrowRight } from "lucide-react";
 import { Layout } from "../components/layout/Layout";
 import { StatusBadge, SkeletonRow } from "../components/ui/index";
 import { Button } from "../components/ui/Button";
@@ -96,7 +89,9 @@ export default function DashboardPage() {
           <CardHeader>
             <CardTitle className="flex items-center justify-between text-sm font-medium text-muted-foreground">
               Total Revenue
-              <DollarSign className="size-4" />
+              <span className="text-sm font-semibold leading-none text-muted-foreground">
+                ₵
+              </span>
             </CardTitle>
           </CardHeader>
           <CardContent>
