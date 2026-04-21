@@ -75,7 +75,7 @@ export default function DashboardPage() {
   return (
     <Layout
       title="Data Overview"
-      breadcrumbParent="Build Your Application"
+      breadcrumbParent="InvoiceFlow"
       actions={
         <Link to="/invoices/new">
           <Button variant="secondary" size="sm" leftIcon={<Plus size={14} />}>

@@ -13,6 +13,12 @@ interface LineItem {
   unit_price: number;
 }
 
+function toMinimumQuantity(value: string): number {
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isFinite(parsed) || parsed < 1) return 1;
+  return parsed;
+}
+
 function formatCurrency(val: number) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -181,9 +187,10 @@ export default function CreateInvoicePage() {
                       <Input
                         type="number"
                         min="1"
+                        step="1"
                         value={item.quantity}
                         onChange={(e) =>
-                          updateItem(i, "quantity", Number(e.target.value))
+                          updateItem(i, "quantity", toMinimumQuantity(e.target.value))
                         }
                         error={errors[`item_${i}_qty`]}
                       />
