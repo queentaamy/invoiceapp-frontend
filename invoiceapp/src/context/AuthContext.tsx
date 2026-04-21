@@ -5,7 +5,12 @@ import {
   useCallback,
   type ReactNode,
 } from "react";
-import type { AuthUser, AuthCredentials, SignupPayload } from "../types";
+import type {
+  AuthUser,
+  AuthCredentials,
+  SignupPayload,
+  AuthProfile,
+} from "../types";
 import { authService } from "../services/api";
 
 interface AuthContextValue {
@@ -28,11 +33,35 @@ const demoUser: AuthUser = {
   token: "demo-token",
 };
 
+function readStoredJson<T>(key: string): T | null {
+  const raw = localStorage.getItem(key);
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as T;
+  } catch {
+    return null;
+  }
+}
+
+function hydrateUserFromStorage(): AuthUser | null {
+  const storedUser = readStoredJson<AuthUser>("invoiceflow_user");
+  if (!storedUser) return null;
+
+  const profile = readStoredJson<AuthProfile>("invoiceflow_profile");
+  if (!profile) return storedUser;
+
+  return {
+    ...storedUser,
+    id: profile.id ?? storedUser.id,
+    email: profile.email ?? storedUser.email,
+    name: profile.name ?? storedUser.name,
+  };
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(() => {
     if (DEMO_MODE) return demoUser;
-    const stored = localStorage.getItem("invoiceflow_user");
-    return stored ? JSON.parse(stored) : null;
+    return hydrateUserFromStorage();
   });
   const [isLoading, setIsLoading] = useState(false);
 
