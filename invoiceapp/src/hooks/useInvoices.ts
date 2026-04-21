@@ -158,6 +158,43 @@ export function useInvoices() {
     [success, notify],
   );
 
+  const markInvoicePaid = useCallback(
+    async (id: number): Promise<Invoice | null> => {
+      try {
+        if (DEMO_MODE) {
+          await new Promise((r) => setTimeout(r, 400));
+          const current = invoices.find((inv) => inv.id === id) ?? null;
+          if (!current) return null;
+
+          const updated: Invoice = {
+            ...current,
+            status: "paid",
+          };
+
+          setInvoices((prev) =>
+            prev.map((inv) => (inv.id === id ? updated : inv)),
+          );
+          success("Invoice marked as paid");
+          return updated;
+        }
+
+        const updated = await invoiceService.markAsPaid(id);
+        setInvoices((prev) =>
+          prev.map((inv) => (inv.id === id ? updated : inv)),
+        );
+        success("Invoice marked as paid");
+        return updated;
+      } catch (e) {
+        notify(
+          "Failed to mark invoice as paid",
+          e instanceof Error ? e.message : undefined,
+        );
+        return null;
+      }
+    },
+    [invoices, success, notify],
+  );
+
   return {
     invoices,
     isLoading,
@@ -166,5 +203,6 @@ export function useInvoices() {
     createInvoice,
     updateInvoice,
     deleteInvoice,
+    markInvoicePaid,
   };
 }

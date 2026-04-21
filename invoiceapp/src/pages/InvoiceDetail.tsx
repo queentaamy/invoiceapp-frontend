@@ -65,7 +65,7 @@ async function loadLogoDataUrl(src: string): Promise<string | null> {
 export default function InvoiceDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { invoices, updateInvoice, deleteInvoice } = useInvoices();
+  const { invoices, markInvoicePaid, deleteInvoice } = useInvoices();
   const { customers } = useCustomers();
   const { success, error } = useNotification();
   const [invoice, setInvoice] = useState<Invoice | null>(null);
@@ -99,9 +99,9 @@ export default function InvoiceDetailPage() {
   async function handleMarkPaid() {
     if (!invoice) return;
     setIsMarkingPaid(true);
-    const updated = await updateInvoice(invoice.id, { status: "paid" });
+    const updated = await markInvoicePaid(invoice.id);
     setIsMarkingPaid(false);
-    if (updated) setInvoice({ ...invoice, status: "paid" });
+    if (updated) setInvoice(updated);
   }
 
   async function handleDownload() {

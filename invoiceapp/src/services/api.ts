@@ -409,6 +409,16 @@ export const invoiceService = {
     );
   },
 
+  async markAsPaid(id: number): Promise<Invoice> {
+    return request<Invoice>(
+      {
+        url: `/invoices/${id}/paid`,
+        method: "PATCH",
+      },
+      "Failed to mark invoice as paid",
+    );
+  },
+
   async delete(id: number): Promise<void> {
     await request<void>(
       {
