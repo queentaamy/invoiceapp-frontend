@@ -58,7 +58,19 @@ export default function DashboardPage() {
   const hour = new Date().getHours();
   const greeting =
     hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
-  const email = user?.email ?? "there";
+  const displayName = (() => {
+    const rawName = user?.name?.trim();
+    if (!rawName) return "there";
+
+    const firstName = rawName.split(/\s+/)[0];
+    const emailLocalPart = user?.email?.split("@")[0]?.toLowerCase();
+
+    if (emailLocalPart && firstName.toLowerCase() === emailLocalPart) {
+      return "there";
+    }
+
+    return firstName;
+  })();
 
   return (
     <Layout
@@ -76,8 +88,8 @@ export default function DashboardPage() {
         <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
           {greeting},
         </h2>
-        <p className="max-w-full break-all text-base font-medium leading-tight text-foreground sm:text-lg">
-          {email.replace("@", "\u200b@\u200b")}
+        <p className="max-w-full text-base font-medium leading-tight text-foreground sm:text-lg">
+          {displayName}
         </p>
         <p className="text-sm text-muted-foreground">
           Here's what's happening with your invoices.
