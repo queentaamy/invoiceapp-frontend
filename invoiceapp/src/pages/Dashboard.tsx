@@ -145,12 +145,10 @@ export default function DashboardPage() {
       }
     >
       <section className="pt-4 space-y-1">
-        <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-          {greeting},
+        <h2 className="max-w-full text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+          {greeting},{" "}
+          <span className="font-medium text-foreground">{displayName}</span>
         </h2>
-        <p className="max-w-full text-base font-medium leading-tight text-foreground sm:text-lg">
-          {displayName}
-        </p>
         <p className="text-sm text-muted-foreground">
           Here's what's happening with your invoices.
         </p>
