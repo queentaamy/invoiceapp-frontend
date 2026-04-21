@@ -37,6 +37,31 @@ function formatDate(str?: string) {
   });
 }
 
+async function loadLogoDataUrl(src: string): Promise<string | null> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      try {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          resolve(null);
+          return;
+        }
+        ctx.drawImage(img, 0, 0);
+        resolve(canvas.toDataURL("image/png"));
+      } catch {
+        resolve(null);
+      }
+    };
+    img.onerror = () => resolve(null);
+    img.src = src;
+  });
+}
+
 export default function InvoiceDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -79,15 +104,20 @@ export default function InvoiceDetailPage() {
     if (updated) setInvoice({ ...invoice, status: "paid" });
   }
 
-  function handleDownload() {
+  async function handleDownload() {
     if (!invoice) return;
 
     try {
       const doc = new jsPDF({ unit: "pt", format: "a4" });
       const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
       const left = 40;
       const right = pageWidth - 40;
-      let y = 52;
+      const brandBlue: [number, number, number] = [43, 49, 233];
+      const logoDataUrl = await loadLogoDataUrl(
+        `${window.location.origin}/app-icon.png`,
+      );
+      let y = 126;
 
       const statusValue = (
         invoice.status ?? (invoice as { payment_status?: string }).payment_status
@@ -117,15 +147,45 @@ export default function InvoiceDetailPage() {
       const customerEmail =
         invoice.customer?.email ?? customerEmailById.get(invoice.customer_id) ?? "";
 
+      const drawTableHeader = (headerY: number) => {
+        doc.setFillColor(245, 247, 251);
+        doc.rect(left, headerY - 14, right - left, 24, "F");
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        doc.setTextColor(60, 72, 96);
+        doc.text("Item", left + 8, headerY);
+        doc.text("Qty", left + 285, headerY, { align: "right" });
+        doc.text("Unit", left + 390, headerY, { align: "right" });
+        doc.text("Total", right - 8, headerY, { align: "right" });
+      };
+
+      doc.setFillColor(...brandBlue);
+      doc.rect(0, 0, pageWidth, 96, "F");
+
+      if (logoDataUrl) {
+        doc.addImage(logoDataUrl, "PNG", left, 24, 38, 38);
+      }
+
+      doc.setTextColor(255, 255, 255);
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(22);
-      doc.text("INVOICE", left, y);
-
-      doc.setFontSize(10);
+      doc.setFontSize(18);
+      doc.text("InvoiceFlow", logoDataUrl ? left + 50 : left, 42);
       doc.setFont("helvetica", "normal");
-      doc.text(`Status: ${statusValue}`, right, y, { align: "right" });
+      doc.setFontSize(10);
+      doc.text("Professional billing document", logoDataUrl ? left + 50 : left, 58);
 
-      y += 26;
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(24);
+      doc.text("INVOICE", right, 46, { align: "right" });
+
+      doc.setFillColor(statusValue === "PAID" ? 34 : 234, statusValue === "PAID" ? 197 : 179, statusValue === "PAID" ? 94 : 8);
+      doc.roundedRect(right - 98, 58, 98, 20, 10, 10, "F");
+      doc.setTextColor(255, 255, 255);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      doc.text(statusValue, right - 49, 72, { align: "center" });
+
+      doc.setTextColor(17, 24, 39);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(13);
       doc.text(resolvedInvoiceNumber, left, y);
@@ -154,23 +214,18 @@ export default function InvoiceDetailPage() {
       }
 
       y += 28;
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(10);
-      doc.text("Item", left, y);
-      doc.text("Qty", left + 285, y, { align: "right" });
-      doc.text("Unit", left + 390, y, { align: "right" });
-      doc.text("Total", right, y, { align: "right" });
-
-      y += 10;
-      doc.line(left, y, right, y);
-      y += 18;
+      drawTableHeader(y);
+      y += 22;
 
       doc.setFont("helvetica", "normal");
+      doc.setTextColor(17, 24, 39);
       const lineItems = invoice.items ?? [];
       for (const item of lineItems) {
-        if (y > 700) {
+        if (y > pageHeight - 90) {
           doc.addPage();
-          y = 52;
+          y = 56;
+          drawTableHeader(y);
+          y += 22;
         }
 
         doc.text(item.item_name, left, y);
@@ -193,21 +248,33 @@ export default function InvoiceDetailPage() {
       y += 22;
 
       doc.setFont("helvetica", "normal");
+      doc.setTextColor(75, 85, 99);
       doc.text("Subtotal", right - 120, y, { align: "right" });
+      doc.setTextColor(17, 24, 39);
       doc.text(formatCurrency(invoice.subtotal), right, y, { align: "right" });
 
       y += 16;
+      doc.setTextColor(75, 85, 99);
       doc.text("Tax (15%)", right - 120, y, { align: "right" });
+      doc.setTextColor(17, 24, 39);
       doc.text(formatCurrency(invoice.tax), right, y, { align: "right" });
 
       y += 22;
+      doc.setDrawColor(220, 226, 236);
+      doc.line(right - 150, y - 11, right, y - 11);
       doc.setFont("helvetica", "bold");
+      doc.setTextColor(...brandBlue);
       doc.text("Total", right - 120, y, { align: "right" });
       doc.text(formatCurrency(invoice.total), right, y, { align: "right" });
 
       if (invoice.notes) {
         y += 30;
+        if (y > pageHeight - 100) {
+          doc.addPage();
+          y = 56;
+        }
         doc.setFont("helvetica", "bold");
+        doc.setTextColor(17, 24, 39);
         doc.text("Notes", left, y);
         y += 14;
         doc.setFont("helvetica", "normal");
@@ -215,6 +282,15 @@ export default function InvoiceDetailPage() {
         const wrappedNotes = doc.splitTextToSize(invoice.notes, right - left);
         doc.text(wrappedNotes, left, y);
       }
+
+      doc.setFontSize(9);
+      doc.setTextColor(107, 114, 128);
+      doc.text(
+        `Generated on ${new Date().toLocaleDateString("en-US")}`,
+        left,
+        pageHeight - 22,
+      );
+      doc.text("InvoiceFlow", right, pageHeight - 22, { align: "right" });
 
       doc.save(`${resolvedInvoiceNumber}.pdf`);
       success("PDF downloaded", `${resolvedInvoiceNumber}.pdf has been saved.`);
