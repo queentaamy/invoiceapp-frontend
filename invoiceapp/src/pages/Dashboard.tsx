@@ -65,6 +65,7 @@ export default function DashboardPage() {
   const hour = new Date().getHours();
   const greeting =
     hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  const email = user?.email ?? "there";
 
   return (
     <Layout
@@ -78,11 +79,14 @@ export default function DashboardPage() {
         </Link>
       }
     >
-      <section className="pt-4">
-        <h2 className="text-3xl font-semibold tracking-tight text-foreground">
-          {greeting}, {user?.email ?? "there"}
+      <section className="pt-4 space-y-1">
+        <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+          {greeting},
         </h2>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="max-w-full break-all text-base font-medium leading-tight text-foreground sm:text-lg">
+          {email.replace("@", "\u200b@\u200b")}
+        </p>
+        <p className="text-sm text-muted-foreground">
           Here's what's happening with your invoices.
         </p>
       </section>
@@ -96,7 +100,7 @@ export default function DashboardPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-semibold tracking-tight">
+            <p className="text-3xl font-semibold tracking-tight sm:text-4xl">
               {isLoading ? "—" : formatCurrency(stats.totalRevenue)}
             </p>
             <p className="mt-2 text-xs text-muted-foreground">
@@ -113,7 +117,7 @@ export default function DashboardPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-semibold tracking-tight">
+            <p className="text-3xl font-semibold tracking-tight sm:text-4xl">
               {isLoading ? "—" : stats.unpaid}
             </p>
             <p className="mt-2 text-xs text-muted-foreground">
@@ -130,7 +134,7 @@ export default function DashboardPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-semibold tracking-tight">
+            <p className="text-3xl font-semibold tracking-tight sm:text-4xl">
               {isLoading
                 ? "—"
                 : `${stats.totalCustomers} / ${stats.totalInvoices}`}
