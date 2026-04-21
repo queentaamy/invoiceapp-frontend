@@ -149,10 +149,10 @@ export default function CustomersPage() {
           <>
             {/* Table header */}
             <div className="grid grid-cols-12 border-b border-zinc-200 bg-muted/40 px-5 py-2.5">
-              <div className="col-span-5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              <div className="col-span-7 text-xs font-semibold uppercase tracking-wide text-muted-foreground md:col-span-5 lg:col-span-4">
                 Customer
               </div>
-              <div className="col-span-3 hidden text-xs font-semibold uppercase tracking-wide text-muted-foreground md:block">
+              <div className="col-span-4 hidden text-xs font-semibold uppercase tracking-wide text-muted-foreground md:block lg:col-span-3">
                 Email
               </div>
               <div className="col-span-2 hidden text-xs font-semibold uppercase tracking-wide text-muted-foreground lg:block">
@@ -161,17 +161,19 @@ export default function CustomersPage() {
               <div className="col-span-2 hidden text-xs font-semibold uppercase tracking-wide text-muted-foreground lg:block">
                 Total Billed
               </div>
-              <div className="col-span-1" />
+              <div className="col-span-5 text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground md:col-span-3 lg:col-span-1">
+                Actions
+              </div>
             </div>
 
             <div className="divide-y divide-zinc-200">
               {filtered.map((c, idx) => (
                 <div
                   key={c.id}
-                  className="group grid grid-cols-12 items-center px-5 py-3.5 transition-colors hover:bg-muted/30"
+                  className="grid grid-cols-12 items-center px-5 py-3.5 transition-colors hover:bg-muted/30"
                 >
                   {/* Name + avatar */}
-                  <div className="col-span-5 flex items-center gap-3">
+                  <div className="col-span-7 flex items-center gap-3 md:col-span-5 lg:col-span-4">
                     <div
                       className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold shrink-0 ${bgColors[idx % bgColors.length]}`}
                     >
@@ -188,7 +190,7 @@ export default function CustomersPage() {
                   </div>
 
                   {/* Email */}
-                  <div className="col-span-3 hidden items-center gap-1.5 text-sm text-muted-foreground md:flex">
+                  <div className="col-span-4 hidden items-center gap-1.5 text-sm text-muted-foreground md:flex lg:col-span-3">
                     <Mail
                       size={12}
                       className="shrink-0 text-muted-foreground/60"
@@ -211,7 +213,7 @@ export default function CustomersPage() {
                   </div>
 
                   {/* Actions */}
-                  <div className="col-span-7 flex items-center justify-end gap-1 opacity-0 transition-opacity group-hover:opacity-100 md:col-span-1">
+                  <div className="col-span-5 flex items-center justify-end gap-1 md:col-span-3 lg:col-span-1">
                     <Link to={`/invoices?customer=${c.id}`}>
                       <button
                         className="rounded-lg p-1.5 text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
