@@ -24,7 +24,18 @@ const TOKEN_KEY = "invoiceflow_token";
 // ── Helpers ──────────────────────────────────
 
 function getToken(): string | null {
-  return localStorage.getItem(TOKEN_KEY);
+  const directToken = localStorage.getItem(TOKEN_KEY);
+  if (directToken) return directToken;
+
+  const storedUser = localStorage.getItem("invoiceflow_user");
+  if (!storedUser) return null;
+
+  try {
+    const user = JSON.parse(storedUser) as { token?: unknown };
+    return typeof user.token === "string" ? user.token : null;
+  } catch {
+    return null;
+  }
 }
 
 function setToken(token: string): void {

@@ -80,7 +80,7 @@ export default function DashboardPage() {
     >
       <section className="pt-4">
         <h2 className="text-3xl font-semibold tracking-tight text-foreground">
-          {greeting}, {user?.name?.split(" ")[0] ?? "there"}
+          {greeting}, {user?.email ?? "there"}
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">
           Here's what's happening with your invoices.
