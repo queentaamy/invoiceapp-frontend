@@ -6,6 +6,8 @@ import { TooltipProvider } from "./components/ui/tooltip";
 
 import LoginPage from "./pages/Login";
 import SignupPage from "./pages/Signup";
+import TermsOfServicePage from "./pages/TermsOfService";
+import PrivacyPolicyPage from "./pages/PrivacyPolicy";
 import DashboardPage from "./pages/Dashboard";
 import CustomersPage from "./pages/Customers";
 import InvoicesPage from "./pages/Invoices";
@@ -25,6 +27,8 @@ export default function App() {
               {/* Public routes */}
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
+              <Route path="/terms" element={<TermsOfServicePage />} />
+              <Route path="/privacy" element={<PrivacyPolicyPage />} />
 
               {/* Protected routes */}
               <Route
