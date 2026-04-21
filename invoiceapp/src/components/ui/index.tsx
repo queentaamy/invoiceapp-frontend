@@ -79,28 +79,27 @@ export function Modal({
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center p-4">
       <div
-        className="modal-overlay-enter absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(43,49,233,0.12),_transparent_32%),rgba(15,23,42,0.34)] backdrop-blur-md"
+        className="modal-overlay-enter absolute inset-0 bg-transparent backdrop-blur-sm"
         onClick={onClose}
       />
       <div
         className={clsx(
-          "modal-panel-enter relative w-full overflow-hidden rounded-[28px] border border-white/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(248,250,252,0.96)_100%)] shadow-[0_32px_80px_rgba(15,23,42,0.22)]",
+          "modal-panel-enter relative w-full bg-white rounded-2xl shadow-float",
           modalSizes[size],
         )}
       >
-        <div className="absolute inset-x-0 top-0 h-24 bg-[radial-gradient(circle_at_top,_rgba(43,49,233,0.12),_transparent_70%)]" />
         {title && (
-          <div className="relative flex items-center justify-between border-b border-ink-100/80 px-6 pb-4 pt-5">
-            <h2 className="text-lg font-semibold text-ink-900">{title}</h2>
+          <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-ink-100">
+            <h2 className="text-base font-semibold text-ink-900">{title}</h2>
             <button
               onClick={onClose}
-              className="rounded-full border border-white/80 bg-white/85 p-2 text-ink-400 shadow-sm transition-all hover:-translate-y-px hover:text-ink-700 hover:bg-white"
+              className="p-1.5 rounded-lg text-ink-400 hover:text-ink-700 hover:bg-ink-100 transition-all"
             >
               <X size={16} />
             </button>
           </div>
         )}
-        <div className="relative px-6 py-5">{children}</div>
+        <div className="px-6 py-5">{children}</div>
       </div>
     </div>
   );
@@ -230,40 +229,23 @@ export function ConfirmDialog({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
-        className="modal-overlay-enter absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(239,68,68,0.12),_transparent_30%),rgba(15,23,42,0.46)] backdrop-blur-md"
+        className="modal-overlay-enter absolute inset-0 bg-transparent backdrop-blur-sm"
         onClick={onClose}
       />
-      <div className="modal-panel-enter relative w-full max-w-md overflow-hidden rounded-[28px] border border-white/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(248,250,252,0.95)_100%)] p-6 shadow-[0_32px_80px_rgba(15,23,42,0.24)]">
-        <div className="absolute inset-x-0 top-0 h-24 bg-[radial-gradient(circle_at_top,_rgba(248,113,113,0.18),_transparent_72%)]" />
-        <div className="relative">
-          <div className="mb-5 flex items-start gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[linear-gradient(145deg,#fff1f2_0%,#fee2e2_100%)] text-red-600 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_12px_24px_rgba(239,68,68,0.16)]">
-              <X size={20} />
-            </div>
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-red-500/80">
-                Confirm action
-              </p>
-              <h3 className="mt-2 text-2xl font-semibold tracking-tight text-ink-900">
-                {title}
-              </h3>
-            </div>
-          </div>
-          <div className="rounded-2xl border border-red-100/80 bg-white/80 px-4 py-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.95)]">
-            <p className="text-sm leading-7 text-ink-500">{message}</p>
-          </div>
-        </div>
-        <div className="mt-6 flex gap-3 justify-end">
+      <div className="modal-panel-enter relative w-full max-w-sm bg-white rounded-2xl shadow-float p-6">
+        <h3 className="font-semibold text-ink-900 mb-2">{title}</h3>
+        <p className="text-sm text-ink-500 mb-6">{message}</p>
+        <div className="flex gap-3 justify-end">
           <button
             onClick={onClose}
-            className="rounded-2xl border border-ink-200 bg-white px-4 py-2.5 text-sm font-medium text-ink-600 transition-all hover:-translate-y-px hover:border-ink-300 hover:text-ink-900"
+            className="px-4 py-2 text-sm font-medium text-ink-600 hover:text-ink-900 transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
             disabled={isLoading}
-            className="rounded-2xl bg-[linear-gradient(135deg,#ef4444_0%,#dc2626_100%)] px-4 py-2.5 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(220,38,38,0.28)] transition-all hover:-translate-y-px hover:brightness-105 disabled:opacity-60"
+            className="px-4 py-2 text-sm font-medium bg-red-500 text-white rounded-lg hover:bg-red-600 disabled:opacity-60 transition-colors"
           >
             {isLoading ? "Deleting..." : confirmLabel}
           </button>
