@@ -245,7 +245,7 @@ export default function CustomersPage() {
         <div className="flex flex-col gap-4">
           <Input
             label="Full name"
-            placeholder="Acme Corporation"
+            placeholder="InvoiceFlow"
             value={form.name}
             onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
             error={formErrors.name}
@@ -254,7 +254,7 @@ export default function CustomersPage() {
           <Input
             label="Email address"
             type="email"
-            placeholder="billing@acme.com"
+            placeholder="appiahasantewa7@gmail.com"
             value={form.email}
             onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
             error={formErrors.email}
