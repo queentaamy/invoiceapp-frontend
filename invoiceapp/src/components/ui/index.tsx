@@ -79,7 +79,7 @@ export function Modal({
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center p-4">
       <div
-        className="absolute inset-0 bg-ink-950/40 backdrop-blur-sm animate-fade-in"
+        className="absolute inset-0 bg-transparent backdrop-blur-sm animate-fade-in"
         onClick={onClose}
       />
       <div
@@ -229,7 +229,7 @@ export function ConfirmDialog({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
-        className="absolute inset-0 bg-ink-950/40 backdrop-blur-sm"
+        className="absolute inset-0 bg-transparent backdrop-blur-sm"
         onClick={onClose}
       />
       <div className="relative w-full max-w-sm bg-white rounded-2xl shadow-float animate-scale-in p-6">
