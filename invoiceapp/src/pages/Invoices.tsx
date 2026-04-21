@@ -216,46 +216,51 @@ export default function InvoicesPage() {
         ) : (
           <>
             {/* Header */}
-            <div className="grid grid-cols-12 border-b border-zinc-200 bg-muted/40 px-5 py-2.5">
-              <div className="col-span-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <div className="grid grid-cols-12 gap-x-4 border-b border-zinc-200 bg-muted/40 px-5 py-2.5 lg:grid-cols-7">
+              <div className="col-span-6 text-xs font-semibold uppercase tracking-wide text-muted-foreground md:col-span-4 lg:col-span-1">
                 Invoice
               </div>
-              <div className="col-span-3 hidden text-xs font-semibold uppercase tracking-wide text-muted-foreground md:block">
+              <div className="col-span-4 hidden text-xs font-semibold uppercase tracking-wide text-muted-foreground md:block lg:col-span-1">
                 Customer
               </div>
-              <div className="col-span-2 hidden text-xs font-semibold uppercase tracking-wide text-muted-foreground lg:block">
+              <div className="col-span-2 hidden text-xs font-semibold uppercase tracking-wide text-muted-foreground lg:block lg:col-span-1">
                 Date
               </div>
-              <div className="col-span-2 hidden text-xs font-semibold uppercase tracking-wide text-muted-foreground lg:block">
+              <div className="col-span-2 hidden text-xs font-semibold uppercase tracking-wide text-muted-foreground lg:block lg:col-span-1">
                 Due
               </div>
-              <div className="col-span-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              <div className="col-span-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground md:col-span-2 lg:col-span-1">
                 Status
               </div>
-              <div className="col-span-2 text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground lg:col-span-1">
+              <div className="col-span-2 text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground md:col-span-1 lg:col-span-1">
                 Amount
+              </div>
+              <div className="col-span-1 text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground lg:col-span-1">
+                Actions
               </div>
             </div>
 
             <div className="divide-y divide-zinc-200">
               {filtered.map((inv) => (
-                <Link
+                <div
                   key={inv.id}
-                  to={`/invoices/${inv.id}`}
-                  className="group grid grid-cols-12 items-center px-5 py-3.5 transition-colors hover:bg-muted/30"
+                  className="group grid grid-cols-12 items-center gap-x-4 px-5 py-3.5 transition-colors hover:bg-muted/30 lg:grid-cols-7"
                 >
                   {/* Invoice number */}
-                  <div className="col-span-3 flex items-center gap-2.5">
+                  <div className="col-span-6 flex items-center gap-2.5 md:col-span-4 lg:col-span-1">
                     <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-muted transition-colors group-hover:bg-muted/80">
                       <FileText size={12} className="text-muted-foreground" />
                     </div>
-                    <span className="font-mono text-sm font-medium text-foreground">
+                    <Link
+                      to={`/invoices/${inv.id}`}
+                      className="font-mono text-sm font-medium text-foreground hover:underline"
+                    >
                       {resolveInvoiceNumber(inv)}
-                    </span>
+                    </Link>
                   </div>
 
                   {/* Customer */}
-                  <div className="col-span-3 hidden md:block">
+                  <div className="col-span-4 hidden md:block lg:col-span-1">
                     <p className="truncate text-sm text-foreground/80">
                       {inv.customer?.name ??
                         customerNameById.get(inv.customer_id) ??
@@ -264,35 +269,42 @@ export default function InvoicesPage() {
                   </div>
 
                   {/* Created date */}
-                  <div className="col-span-2 hidden lg:block">
+                  <div className="col-span-2 hidden lg:block lg:col-span-1">
                     <p className="text-sm text-muted-foreground">
                       {formatDate(resolveCreatedDate(inv))}
                     </p>
                   </div>
 
                   {/* Due date */}
-                  <div className="col-span-2 hidden lg:block">
+                  <div className="col-span-2 hidden lg:block lg:col-span-1">
                     <p className="text-sm text-muted-foreground">
                       {formatDate(resolveDueDate(inv))}
                     </p>
                   </div>
 
                   {/* Status */}
-                  <div className="col-span-2">
+                  <div className="col-span-3 md:col-span-2 lg:col-span-1">
                     <StatusBadge status={resolveStatus(inv)} />
                   </div>
 
-                  {/* Amount + arrow */}
-                  <div className="col-span-2 lg:col-span-1 flex items-center justify-end gap-2">
+                  {/* Amount */}
+                  <div className="col-span-2 md:col-span-1 lg:col-span-1 flex items-center justify-end">
                     <p className="text-sm font-semibold text-foreground">
                       {formatCurrency(inv.total)}
                     </p>
-                    <ArrowRight
-                      size={13}
-                      className="hidden text-muted-foreground transition-colors group-hover:text-foreground lg:block"
-                    />
                   </div>
-                </Link>
+
+                  {/* Actions */}
+                  <div className="col-span-1 flex justify-end lg:col-span-1">
+                    <Link
+                      to={`/invoices/${inv.id}`}
+                      className="inline-flex items-center rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                      title="View invoice"
+                    >
+                      <ArrowRight size={13} />
+                    </Link>
+                  </div>
+                </div>
               ))}
             </div>
 
