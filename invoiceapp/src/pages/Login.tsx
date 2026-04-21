@@ -165,6 +165,10 @@ export default function LoginPage() {
                 </Link>
               </p>
 
+              <p className="mt-2 text-center text-xs tracking-[0.02em] text-ink-500/90 sm:text-[13px]">
+                Designed by Taamy with love ❤️
+              </p>
+
               {import.meta.env.VITE_ENABLE_DEMO_MODE === "true" && (
                 <p className="mt-2.5 text-center text-xs text-ink-500">
                   Demo mode active: any email and password can sign in.

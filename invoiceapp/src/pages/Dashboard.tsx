@@ -57,6 +57,11 @@ export default function DashboardPage() {
   const { invoices, isLoading: invLoading } = useInvoices();
   const { customers, isLoading: custLoading } = useCustomers();
 
+  const customerNameById = useMemo(
+    () => new Map(customers.map((customer) => [customer.id, customer.name])),
+    [customers],
+  );
+
   const resolveStatus = (invoice: (typeof invoices)[number]): InvoiceStatus => {
     const raw = (
       invoice.status ?? (invoice as { payment_status?: string }).payment_status
@@ -94,6 +99,20 @@ export default function DashboardPage() {
     return subtotal + tax;
   };
 
+  const resolveCreatedDate = (invoice: (typeof invoices)[number]) => {
+    return (
+      invoice.created_at ??
+      (invoice as { createdAt?: string }).createdAt ??
+      (invoice as { date?: string }).date
+    );
+  };
+
+  const resolveInvoiceNumber = (invoice: (typeof invoices)[number]) => {
+    const rawNumber = invoice.invoice_number?.toString().trim();
+    if (rawNumber) return rawNumber;
+    return `INV-${String(invoice.id).padStart(3, "0")}`;
+  };
+
   const stats = useMemo(() => {
     const unpaid = invoices.filter(
       (i) => {
@@ -112,7 +131,22 @@ export default function DashboardPage() {
     };
   }, [invoices, customers]);
 
-  const recentInvoices = invoices.slice(0, 5);
+  const recentInvoices = useMemo(() => {
+    return [...invoices]
+      .sort((a, b) => {
+        const left = resolveCreatedDate(a);
+        const right = resolveCreatedDate(b);
+        const leftTimestamp = left ? new Date(left).getTime() : 0;
+        const rightTimestamp = right ? new Date(right).getTime() : 0;
+
+        if (leftTimestamp !== rightTimestamp) {
+          return rightTimestamp - leftTimestamp;
+        }
+
+        return b.id - a.id;
+      })
+      .slice(0, 5);
+  }, [invoices]);
   const isLoading = invLoading || custLoading;
 
   const hour = new Date().getHours();
@@ -211,7 +245,7 @@ export default function DashboardPage() {
         </Card>
       </section>
 
-      <Card className="min-h-[45vh] flex-1 rounded-xl bg-card shadow-none ring-1 ring-zinc-200 md:min-h-min">
+      <Card className="overflow-hidden rounded-xl bg-card shadow-none ring-1 ring-zinc-200">
         <CardHeader className="border-b border-zinc-200">
           <div className="flex items-center justify-between gap-3">
             <CardTitle className="text-lg">Recent Invoices</CardTitle>
@@ -247,30 +281,32 @@ export default function DashboardPage() {
                 <Link
                   key={inv.id}
                   to={`/invoices/${inv.id}`}
-                  className="group flex items-center justify-between px-4 py-3 transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-muted/40 md:px-5"
+                  className="group grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-4 py-3 transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-muted/40 md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] md:px-5"
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex min-w-0 items-center gap-3">
                     <div className="flex size-9 items-center justify-center rounded-lg bg-muted/60">
                       <FileText size={14} className="text-muted-foreground" />
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <p className="text-sm font-medium text-foreground">
-                        {inv.invoice_number}
+                        {resolveInvoiceNumber(inv)}
                       </p>
-                      <p className="text-xs text-muted-foreground">
-                        {inv.customer?.name ?? `Customer #${inv.customer_id}`}
+                      <p className="truncate text-xs text-muted-foreground">
+                        {inv.customer?.name ??
+                          customerNameById.get(inv.customer_id) ??
+                          `Customer #${inv.customer_id}`}
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 md:gap-4">
+                  <div className="flex items-center justify-end gap-3 md:gap-4">
                     <StatusBadge
                       status={resolveStatus(inv)}
                     />
-                    <p className="hidden text-sm font-semibold text-foreground sm:block">
-                      {formatCurrency(inv.total)}
+                    <p className="text-sm font-semibold text-foreground">
+                      {formatCurrency(resolveTotal(inv))}
                     </p>
                     <p className="hidden text-xs text-muted-foreground lg:block">
-                      {formatDate(inv.created_at)}
+                      {formatDate(resolveCreatedDate(inv))}
                     </p>
                     <ArrowRight
                       size={14}
