@@ -16,6 +16,9 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
+      headers: {
+        "Cache-Control": "no-store",
+      },
       proxy: {
         "/api": {
           target: apiProxyTarget,
@@ -23,6 +26,11 @@ export default defineConfig(({ mode }) => {
           secure: false,
           rewrite: (path) => path.replace(/^\/api/, ""),
         },
+      },
+    },
+    preview: {
+      headers: {
+        "Cache-Control": "no-store",
       },
     },
   };

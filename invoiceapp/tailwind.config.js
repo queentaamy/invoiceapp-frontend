@@ -4,9 +4,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"Sora"', "sans-serif"],
+        sans: ['"Geist Variable"', '"Geist"', "sans-serif"],
         mono: ['"JetBrains Mono"', "monospace"],
-        display: ['"Cabinet Grotesk"', '"Sora"', "sans-serif"],
+        display: ['"Geist Variable"', '"Geist"', "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
