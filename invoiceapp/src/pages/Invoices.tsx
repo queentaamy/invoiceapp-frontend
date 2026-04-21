@@ -253,7 +253,7 @@ export default function InvoicesPage() {
               <div className="col-span-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground md:col-span-2 lg:col-span-1">
                 Status
               </div>
-              <div className="col-span-2 text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground md:col-span-1 lg:col-span-1">
+              <div className="col-span-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground md:col-span-1 lg:col-span-1">
                 Amount
               </div>
               <div className="col-span-1 text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground lg:col-span-1">
@@ -309,7 +309,7 @@ export default function InvoicesPage() {
                   </div>
 
                   {/* Amount */}
-                  <div className="col-span-2 md:col-span-1 lg:col-span-1 flex items-center justify-end">
+                  <div className="col-span-2 md:col-span-1 lg:col-span-1 flex items-center justify-start">
                     <p className="text-sm font-semibold text-foreground">
                       {formatCurrency(inv.total)}
                     </p>
