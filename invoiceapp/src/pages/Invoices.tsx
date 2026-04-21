@@ -131,6 +131,7 @@ export default function InvoicesPage() {
     }),
     [invoices],
   );
+  const invoiceListMotionKey = `${search.trim().toLowerCase()}-${statusFilter}-${filtered.length}`;
 
   async function handleDelete() {
     if (deleteId === null) return;
@@ -261,11 +262,11 @@ export default function InvoicesPage() {
               </div>
             </div>
 
-            <div className="divide-y divide-zinc-200">
+            <div key={invoiceListMotionKey} className="table-stagger divide-y divide-zinc-200">
               {filtered.map((inv) => (
                 <div
                   key={inv.id}
-                  className="group grid grid-cols-12 items-center gap-x-4 px-5 py-3.5 transition-colors hover:bg-muted/30 lg:grid-cols-7"
+                  className="group grid grid-cols-12 items-center gap-x-4 px-5 py-3.5 transition-[background-color,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-muted/30 hover:-translate-y-0.5 lg:grid-cols-7"
                 >
                   {/* Invoice number */}
                   <div className="col-span-6 flex items-center gap-2.5 md:col-span-4 lg:col-span-1">

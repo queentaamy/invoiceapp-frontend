@@ -57,6 +57,7 @@ export default function CustomersPage() {
       c.name.toLowerCase().includes(search.toLowerCase()) ||
       c.email.toLowerCase().includes(search.toLowerCase()),
   );
+  const customerListMotionKey = `${search.trim().toLowerCase()}-${filtered.length}`;
 
   function validateForm() {
     const errs: typeof formErrors = {};
@@ -166,11 +167,11 @@ export default function CustomersPage() {
               </div>
             </div>
 
-            <div className="divide-y divide-zinc-200">
+            <div key={customerListMotionKey} className="table-stagger divide-y divide-zinc-200">
               {filtered.map((c, idx) => (
                 <div
                   key={c.id}
-                  className="grid grid-cols-12 items-center px-5 py-3.5 transition-colors hover:bg-muted/30"
+                  className="group grid grid-cols-12 items-center px-5 py-3.5 transition-[background-color,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-muted/30 hover:-translate-y-0.5"
                 >
                   {/* Name + avatar */}
                   <div className="col-span-7 flex items-center gap-3 md:col-span-5 lg:col-span-4">

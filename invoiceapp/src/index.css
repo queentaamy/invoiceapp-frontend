@@ -125,6 +125,35 @@
     animation: reveal-soft 0.42s ease-out both;
   }
 
+  .reveal-panel {
+    animation: reveal-panel 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .modal-overlay-enter {
+    animation: modal-overlay-in 0.34s ease-out both;
+  }
+
+  .modal-panel-enter {
+    animation: modal-panel-in 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+    transform-origin: top center;
+  }
+
+  .table-stagger > * {
+    opacity: 0;
+    animation: table-row-in 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .table-stagger > *:nth-child(1) { animation-delay: 0.02s; }
+  .table-stagger > *:nth-child(2) { animation-delay: 0.05s; }
+  .table-stagger > *:nth-child(3) { animation-delay: 0.08s; }
+  .table-stagger > *:nth-child(4) { animation-delay: 0.11s; }
+  .table-stagger > *:nth-child(5) { animation-delay: 0.14s; }
+  .table-stagger > *:nth-child(6) { animation-delay: 0.17s; }
+  .table-stagger > *:nth-child(7) { animation-delay: 0.2s; }
+  .table-stagger > *:nth-child(8) { animation-delay: 0.23s; }
+  .table-stagger > *:nth-child(9) { animation-delay: 0.26s; }
+  .table-stagger > *:nth-child(10) { animation-delay: 0.29s; }
+
   .stagger-children > * {
     opacity: 0;
     animation: reveal-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -237,6 +266,54 @@
   }
 }
 
+@keyframes reveal-panel {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes modal-overlay-in {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(10px);
+  }
+}
+
+@keyframes modal-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.96);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.01);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes table-row-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -251,6 +328,11 @@
   }
 
   .stagger-children > * {
+    opacity: 1;
+    animation: none;
+  }
+
+  .table-stagger > * {
     opacity: 1;
     animation: none;
   }

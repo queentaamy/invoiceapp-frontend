@@ -242,12 +242,12 @@ export default function DashboardPage() {
           </CardContent>
         ) : (
           <CardContent className="p-0">
-            <div className="divide-y divide-zinc-200">
+            <div className="table-stagger divide-y divide-zinc-200">
               {recentInvoices.map((inv) => (
                 <Link
                   key={inv.id}
                   to={`/invoices/${inv.id}`}
-                  className="group flex items-center justify-between px-4 py-3 transition-colors hover:bg-muted/40 md:px-5"
+                  className="group flex items-center justify-between px-4 py-3 transition-[background-color,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-muted/40 hover:-translate-y-0.5 md:px-5"
                 >
                   <div className="flex items-center gap-3">
                     <div className="flex size-9 items-center justify-center rounded-lg bg-muted/60">
