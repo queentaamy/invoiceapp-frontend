@@ -74,6 +74,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(() => {
     authService.logout();
     localStorage.removeItem("invoiceflow_user");
+    localStorage.removeItem("invoiceflow_customers");
+    localStorage.removeItem("invoiceflow_invoices");
     setUser(null);
   }, []);
 

@@ -7,6 +7,7 @@ import type {
 import { invoiceService } from "../services/api";
 import { mockInvoices } from "../services/mockData";
 import { useNotification } from "../context/NotificationContext";
+import { useAuth } from "../context/AuthContext";
 
 const DEMO_MODE = import.meta.env.VITE_ENABLE_DEMO_MODE === "true";
 
@@ -15,6 +16,7 @@ export function useInvoices() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { success, error: notify } = useNotification();
+  const { user } = useAuth();
 
   const fetchInvoices = useCallback(async () => {
     setIsLoading(true);
@@ -39,7 +41,7 @@ export function useInvoices() {
 
   useEffect(() => {
     fetchInvoices();
-  }, [fetchInvoices]);
+  }, [fetchInvoices, user?.id]);
 
   const createInvoice = useCallback(
     async (payload: CreateInvoicePayload): Promise<Invoice | null> => {

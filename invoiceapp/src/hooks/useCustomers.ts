@@ -3,6 +3,7 @@ import type { Customer, CreateCustomerPayload } from "../types";
 import { customerService } from "../services/api";
 import { mockCustomers } from "../services/mockData";
 import { useNotification } from "../context/NotificationContext";
+import { useAuth } from "../context/AuthContext";
 
 const DEMO_MODE = import.meta.env.VITE_ENABLE_DEMO_MODE === "true";
 
@@ -11,6 +12,7 @@ export function useCustomers() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { success, error: notify } = useNotification();
+  const { user } = useAuth();
 
   const fetchCustomers = useCallback(async () => {
     setIsLoading(true);
@@ -35,7 +37,7 @@ export function useCustomers() {
 
   useEffect(() => {
     fetchCustomers();
-  }, [fetchCustomers]);
+  }, [fetchCustomers, user?.id]);
 
   const createCustomer = useCallback(
     async (payload: CreateCustomerPayload): Promise<Customer | null> => {
