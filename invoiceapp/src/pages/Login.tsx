@@ -67,15 +67,16 @@ export default function LoginPage() {
 
   return (
     <div
-      className="relative min-h-dvh overflow-x-hidden bg-center bg-cover"
+      className="auth-stage-enter relative min-h-dvh overflow-x-hidden bg-center bg-cover"
       style={{ backgroundImage: "url('/bg-invoiceapp.png')" }}
     >
       <div className="absolute inset-0 bg-gradient-to-b from-sky-100/45 via-white/20 to-white/35" />
+      <div className="auth-glow-enter pointer-events-none absolute left-1/2 top-1/2 h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,_rgba(255,255,255,0.72)_0%,rgba(191,219,254,0.34)_38%,rgba(255,255,255,0)_72%)]" />
 
       <div className="relative z-10 flex min-h-dvh items-center px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
         <div className="mx-auto w-full max-w-sm sm:max-w-[26rem]">
-          <div className="relative rounded-[24px] border border-white/65 bg-white/54 px-5 py-5 shadow-[0_18px_44px_rgba(15,23,42,0.16)] backdrop-blur-md sm:px-6 sm:py-6">
-            <div className="absolute -top-7 left-1/2 -translate-x-1/2 sm:-top-8">
+          <div className="auth-card-enter relative rounded-[24px] border border-white/65 bg-white/54 px-5 py-5 shadow-[0_18px_44px_rgba(15,23,42,0.16)] backdrop-blur-md sm:px-6 sm:py-6">
+            <div className="auth-logo-enter absolute -top-7 left-1/2 sm:-top-8">
               <div>
                 <AppLogo
                   size={68}
@@ -85,7 +86,7 @@ export default function LoginPage() {
             </div>
 
             <div className="pt-7 sm:pt-8">
-              <div className="mb-5 text-center sm:mb-6">
+              <div className="auth-copy-enter mb-5 text-center sm:mb-6">
                 <h1 className="text-[24px] font-bold leading-tight tracking-tight text-ink-900 sm:text-[28px]">
                   Sign in with email
                 </h1>
@@ -95,7 +96,7 @@ export default function LoginPage() {
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-3">
+              <form onSubmit={handleSubmit} className="auth-form-stagger space-y-3">
                 <div className="relative">
                   <Mail
                     size={16}

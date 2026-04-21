@@ -139,6 +139,41 @@
     transform-origin: top center;
   }
 
+  .auth-stage-enter {
+    animation: auth-stage-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .auth-glow-enter {
+    animation: auth-glow-in 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .auth-card-enter {
+    animation: auth-card-in 0.82s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .auth-logo-enter {
+    animation: auth-logo-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .auth-copy-enter {
+    opacity: 0;
+    animation: auth-copy-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: 0.16s;
+  }
+
+  .auth-form-stagger > * {
+    opacity: 0;
+    animation: auth-form-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .auth-form-stagger > *:nth-child(1) { animation-delay: 0.22s; }
+  .auth-form-stagger > *:nth-child(2) { animation-delay: 0.3s; }
+  .auth-form-stagger > *:nth-child(3) { animation-delay: 0.38s; }
+  .auth-form-stagger > *:nth-child(4) { animation-delay: 0.46s; }
+  .auth-form-stagger > *:nth-child(5) { animation-delay: 0.54s; }
+  .auth-form-stagger > *:nth-child(6) { animation-delay: 0.62s; }
+  .auth-form-stagger > *:nth-child(7) { animation-delay: 0.7s; }
+
   .table-stagger > * {
     opacity: 0;
     animation: table-row-in 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -315,6 +350,86 @@
   }
 }
 
+@keyframes auth-stage-in {
+  from {
+    opacity: 0;
+    transform: scale(1.015);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes auth-glow-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.96);
+    filter: blur(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes auth-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.965);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-3px) scale(1.005);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes auth-logo-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 10px) scale(0.86) rotate(-5deg);
+    filter: blur(8px);
+  }
+  55% {
+    opacity: 1;
+    transform: translate(-50%, -2px) scale(1.04) rotate(1deg);
+    filter: blur(0);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1) rotate(0deg);
+    filter: blur(0);
+  }
+}
+
+@keyframes auth-copy-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes auth-form-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -334,6 +449,12 @@
   }
 
   .table-stagger > * {
+    opacity: 1;
+    animation: none;
+  }
+
+  .auth-copy-enter,
+  .auth-form-stagger > * {
     opacity: 1;
     animation: none;
   }
