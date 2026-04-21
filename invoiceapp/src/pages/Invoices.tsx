@@ -266,7 +266,7 @@ export default function InvoicesPage() {
               {filtered.map((inv) => (
                 <div
                   key={inv.id}
-                  className="group grid grid-cols-12 items-center gap-x-4 px-5 py-3.5 transition-[background-color,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-muted/30 hover:-translate-y-0.5 lg:grid-cols-7"
+                  className="group grid grid-cols-12 items-center gap-x-4 px-5 py-3.5 transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-muted/30 lg:grid-cols-7"
                 >
                   {/* Invoice number */}
                   <div className="col-span-6 flex items-center gap-2.5 md:col-span-4 lg:col-span-1">

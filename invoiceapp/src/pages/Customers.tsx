@@ -171,7 +171,7 @@ export default function CustomersPage() {
               {filtered.map((c, idx) => (
                 <div
                   key={c.id}
-                  className="group grid grid-cols-12 items-center px-5 py-3.5 transition-[background-color,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-muted/30 hover:-translate-y-0.5"
+                  className="group grid grid-cols-12 items-center px-5 py-3.5 transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-muted/30"
                 >
                   {/* Name + avatar */}
                   <div className="col-span-7 flex items-center gap-3 md:col-span-5 lg:col-span-4">
