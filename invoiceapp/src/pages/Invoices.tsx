@@ -1,10 +1,21 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Plus, FileText, Search, ArrowRight, Filter } from "lucide-react";
+import {
+  Plus,
+  FileText,
+  Search,
+  Filter,
+  Trash2,
+} from "lucide-react";
 import { Layout } from "../components/layout/Layout";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
-import { StatusBadge, EmptyState, SkeletonRow } from "../components/ui/index";
+import {
+  StatusBadge,
+  EmptyState,
+  SkeletonRow,
+  ConfirmDialog,
+} from "../components/ui/index";
 import { useInvoices } from "../hooks/useInvoices";
 import { useCustomers } from "../hooks/useCustomers";
 import type { InvoiceStatus } from "../types";
@@ -36,10 +47,12 @@ const statusFilters: { label: string; value: string }[] = [
 ];
 
 export default function InvoicesPage() {
-  const { invoices, isLoading } = useInvoices();
+  const { invoices, isLoading, deleteInvoice } = useInvoices();
   const { customers } = useCustomers();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const customerNameById = useMemo(
     () => new Map(customers.map((c) => [c.id, c.name])),
@@ -118,6 +131,14 @@ export default function InvoicesPage() {
     }),
     [invoices],
   );
+
+  async function handleDelete() {
+    if (deleteId === null) return;
+    setIsDeleting(true);
+    const ok = await deleteInvoice(deleteId);
+    setIsDeleting(false);
+    if (ok) setDeleteId(null);
+  }
 
   return (
     <Layout
@@ -295,14 +316,21 @@ export default function InvoicesPage() {
                   </div>
 
                   {/* Actions */}
-                  <div className="col-span-1 flex justify-end lg:col-span-1">
+                  <div className="col-span-1 flex justify-end gap-1 lg:col-span-1">
                     <Link
                       to={`/invoices/${inv.id}`}
                       className="inline-flex items-center rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                       title="View invoice"
                     >
-                      <ArrowRight size={13} />
+                      <FileText size={13} />
                     </Link>
+                    <button
+                      onClick={() => setDeleteId(inv.id)}
+                      className="p-1.5 rounded-lg text-ink-400 hover:text-red-500 hover:bg-red-50 transition-all"
+                      title="Delete invoice"
+                    >
+                      <Trash2 size={13} />
+                    </button>
                   </div>
                 </div>
               ))}
@@ -316,6 +344,16 @@ export default function InvoicesPage() {
           </>
         )}
       </div>
+
+      <ConfirmDialog
+        isOpen={deleteId !== null}
+        onClose={() => setDeleteId(null)}
+        onConfirm={handleDelete}
+        title="Delete invoice?"
+        message="This will permanently remove the invoice and cannot be undone."
+        confirmLabel="Delete"
+        isLoading={isDeleting}
+      />
     </Layout>
   );
 }
