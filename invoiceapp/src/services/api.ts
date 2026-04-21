@@ -142,46 +142,42 @@ function needsProfileName(user: AuthUser): boolean {
 }
 
 async function fetchCurrentUserProfileName(): Promise<string | null> {
-  const profileEndpoints = ["/me", "/profile", "/users/me", "/auth/me"];
+  try {
+    const response = await api.request<unknown>({ url: "/profile", method: "GET" });
+    const profile = response.data;
 
-  for (const url of profileEndpoints) {
-    try {
-      const response = await api.request<unknown>({ url, method: "GET" });
-      const profile = response.data;
+    const directName = findStringField(profile, [
+      "name",
+      "full_name",
+      "display_name",
+      "displayName",
+      "user_name",
+      "username",
+    ]);
+    if (directName) return directName;
 
-      const directName = findStringField(profile, [
-        "name",
-        "full_name",
-        "display_name",
-        "displayName",
-        "user_name",
-        "username",
-      ]);
-      if (directName) return directName;
+    const firstName = findStringField(profile, [
+      "first_name",
+      "firstName",
+      "given_name",
+      "givenName",
+    ]);
+    const lastName = findStringField(profile, [
+      "last_name",
+      "lastName",
+      "family_name",
+      "familyName",
+      "surname",
+    ]);
 
-      const firstName = findStringField(profile, [
-        "first_name",
-        "firstName",
-        "given_name",
-        "givenName",
-      ]);
-      const lastName = findStringField(profile, [
-        "last_name",
-        "lastName",
-        "family_name",
-        "familyName",
-        "surname",
-      ]);
+    const fullName = [firstName, lastName]
+      .filter((part): part is string => !!part)
+      .join(" ")
+      .trim();
 
-      const fullName = [firstName, lastName]
-        .filter((part): part is string => !!part)
-        .join(" ")
-        .trim();
-
-      if (fullName) return fullName;
-    } catch {
-      // Some backends won't expose all profile endpoints. Continue trying.
-    }
+    if (fullName) return fullName;
+  } catch {
+    // Profile endpoint may fail for some sessions; keep login fallback behavior.
   }
 
   return null;
