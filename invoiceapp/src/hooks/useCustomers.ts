@@ -36,8 +36,13 @@ export function useCustomers() {
   }, [notify]);
 
   useEffect(() => {
+    if (!user) {
+      setCustomers([]);
+      setError(null);
+      return;
+    }
     fetchCustomers();
-  }, [fetchCustomers, user?.id]);
+  }, [fetchCustomers, user?.id, user]);
 
   const createCustomer = useCallback(
     async (payload: CreateCustomerPayload): Promise<Customer | null> => {

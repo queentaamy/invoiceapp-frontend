@@ -40,8 +40,13 @@ export function useInvoices() {
   }, [notify]);
 
   useEffect(() => {
+    if (!user) {
+      setInvoices([]);
+      setError(null);
+      return;
+    }
     fetchInvoices();
-  }, [fetchInvoices, user?.id]);
+  }, [fetchInvoices, user?.id, user]);
 
   const createInvoice = useCallback(
     async (payload: CreateInvoicePayload): Promise<Invoice | null> => {
