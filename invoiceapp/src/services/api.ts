@@ -343,14 +343,24 @@ export const customerService = {
     );
   },
 
-  async delete(id: number): Promise<void> {
-    await request<void>(
+  async delete(id: number): Promise<string | undefined> {
+    const data = await request<unknown>(
       {
         url: `/customers/${id}`,
         method: "DELETE",
       },
       "Failed to delete customer",
     );
+
+    if (typeof data === "string") return data;
+    if (data && typeof data === "object") {
+      const message = (data as { message?: unknown }).message;
+      if (typeof message === "string" && message.trim()) {
+        return message.trim();
+      }
+    }
+
+    return undefined;
   },
 };
 

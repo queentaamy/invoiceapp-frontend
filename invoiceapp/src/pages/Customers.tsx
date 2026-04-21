@@ -286,7 +286,7 @@ export default function CustomersPage() {
         onClose={() => setDeleteId(null)}
         onConfirm={handleDelete}
         title="Delete customer?"
-        message="This will permanently remove the customer and cannot be undone."
+        message="This will permanently remove the customer and cannot be undone. Customers with existing invoices cannot be deleted until their invoices are removed."
         confirmLabel="Delete"
         isLoading={isDeleting}
       />

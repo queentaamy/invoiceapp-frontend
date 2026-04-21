@@ -149,15 +149,26 @@ export function useCustomers() {
   const deleteCustomer = useCallback(
     async (id: number): Promise<boolean> => {
       try {
+        const targetCustomer = customers.find((c) => c.id === id);
+        const relatedInvoices = targetCustomer?.invoiceCount ?? 0;
+
+        if (relatedInvoices > 0) {
+          notify(
+            "Cannot delete customer",
+            "Delete the customer's invoices before deleting this customer",
+          );
+          return false;
+        }
+
         if (DEMO_MODE) {
           await new Promise((r) => setTimeout(r, 400));
           setCustomers((prev) => prev.filter((c) => c.id !== id));
           success("Customer removed");
           return true;
         } else {
-          await customerService.delete(id);
+          const message = await customerService.delete(id);
           setCustomers((prev) => prev.filter((c) => c.id !== id));
-          success("Customer removed");
+          success("Customer removed", message);
           return true;
         }
       } catch (e) {
@@ -168,7 +179,7 @@ export function useCustomers() {
         return false;
       }
     },
-    [success, notify],
+    [customers, success, notify],
   );
 
   return {

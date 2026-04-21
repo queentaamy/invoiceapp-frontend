@@ -1,5 +1,37 @@
 import axios, { type AxiosError } from "axios";
 
+function formatValidationDetail(detail: unknown): string | null {
+  if (!Array.isArray(detail)) return null;
+
+  const messages = detail
+    .map((item) => {
+      if (!item || typeof item !== "object") return null;
+
+      const record = item as Record<string, unknown>;
+      const msg =
+        typeof record.msg === "string" && record.msg.trim()
+          ? record.msg.trim()
+          : null;
+      if (!msg) return null;
+
+      const loc = Array.isArray(record.loc)
+        ? record.loc
+            .filter((segment): segment is string | number =>
+              typeof segment === "string" || typeof segment === "number",
+            )
+            .map((segment) => String(segment))
+            .join(".")
+        : "";
+
+      return loc ? `${loc}: ${msg}` : msg;
+    })
+    .filter((message): message is string => !!message);
+
+  if (!messages.length) return null;
+
+  return messages.join("; ");
+}
+
 const configuredBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim();
 const baseURL = configuredBaseUrl
   ? configuredBaseUrl.replace(/\/+$/, "")
@@ -41,6 +73,11 @@ export function normalizeApiError(
     const detail = record.detail;
     if (typeof detail === "string" && detail.trim()) {
       return new Error(detail.trim());
+    }
+
+    const validationMessage = formatValidationDetail(detail);
+    if (validationMessage) {
+      return new Error(validationMessage);
     }
 
     const message = record.message;
