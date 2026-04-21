@@ -31,7 +31,7 @@ export default function TermsOfServicePage() {
         {
           title: "Contact",
           body: [
-            "If you have questions about these terms, contact the team through the support channel listed in the app.",
+            "If you have questions about these terms, contact us at appiahasantewaa7@gmail.com.",
           ],
         },
       ]}

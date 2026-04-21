@@ -60,12 +60,12 @@ const data = {
   navSecondary: [
     {
       title: "Support",
-      url: "mailto:support@invoiceflow.app",
+      url: "mailto:appiahasantewaa7@gmail.com",
       icon: HelpCircle,
     },
     {
       title: "Feedback",
-      url: "mailto:feedback@invoiceflow.app",
+      url: "mailto:appiahasantewaa7@gmail.com",
       icon: Mail,
     },
   ],

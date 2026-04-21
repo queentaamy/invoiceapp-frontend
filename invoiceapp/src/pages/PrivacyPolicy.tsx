@@ -31,7 +31,7 @@ export default function PrivacyPolicyPage() {
         {
           title: "Your choices",
           body: [
-            "You can update your account information through the app and contact support if you want help with data removal or access requests.",
+            "You can update your account information through the app and contact us at appiahasantewaa7@gmail.com if you want help with data removal or access requests.",
           ],
         },
       ]}
