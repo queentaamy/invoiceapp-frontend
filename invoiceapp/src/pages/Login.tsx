@@ -72,33 +72,30 @@ export default function LoginPage() {
     >
       <div className="absolute inset-0 bg-gradient-to-b from-sky-100/45 via-white/20 to-white/35" />
 
-      <div className="relative z-10 min-h-dvh px-4 sm:px-6 lg:px-8 2xl:px-10 py-10 sm:py-12 2xl:py-16 flex items-center">
-        <div className="mx-auto w-full max-w-sm sm:max-w-md 2xl:max-w-lg">
-          <div className="relative rounded-[24px] sm:rounded-[26px] 2xl:rounded-[30px] border border-white/60 bg-white/52 backdrop-blur-md shadow-[0_16px_48px_rgba(15,23,42,0.18)] px-5 sm:px-7 2xl:px-9 py-6 sm:py-8 2xl:py-10">
-            <div className="absolute -top-8 sm:-top-9 left-1/2 -translate-x-1/2">
+      <div className="relative z-10 flex min-h-dvh items-center px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+        <div className="mx-auto w-full max-w-sm sm:max-w-[26rem]">
+          <div className="relative rounded-[24px] border border-white/65 bg-white/54 px-5 py-5 shadow-[0_18px_44px_rgba(15,23,42,0.16)] backdrop-blur-md sm:px-6 sm:py-6">
+            <div className="absolute -top-7 left-1/2 -translate-x-1/2 sm:-top-8">
               <div>
                 <AppLogo
-                  size={80}
-                  className="rounded-[20px] sm:rounded-[22px]"
+                  size={68}
+                  className="rounded-[18px] sm:rounded-[20px]"
                 />
               </div>
             </div>
 
-            <div className="pt-8 sm:pt-10">
-              <div className="text-center mb-6 sm:mb-7 2xl:mb-9">
-                <h1 className="text-[26px] sm:text-[30px] 2xl:text-[36px] leading-tight font-bold text-ink-900 tracking-tight">
+            <div className="pt-7 sm:pt-8">
+              <div className="mb-5 text-center sm:mb-6">
+                <h1 className="text-[24px] font-bold leading-tight tracking-tight text-ink-900 sm:text-[28px]">
                   Sign in with email
                 </h1>
-                <p className="mt-2 text-sm sm:text-[15px] 2xl:text-base text-ink-600 max-w-[32ch] mx-auto">
+                <p className="mx-auto mt-2 max-w-[28ch] text-sm leading-6 text-ink-600 sm:text-[15px]">
                   Make a new doc to bring your words, data, and teams together.
                   For free
                 </p>
               </div>
 
-              <form
-                onSubmit={handleSubmit}
-                className="space-y-3.5 2xl:space-y-4"
-              >
+              <form onSubmit={handleSubmit} className="space-y-3">
                 <div className="relative">
                   <Mail
                     size={16}
@@ -109,7 +106,7 @@ export default function LoginPage() {
                     placeholder="Email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full h-11 sm:h-12 2xl:h-[52px] rounded-xl 2xl:rounded-2xl bg-white/75 border border-white/80 focus:border-[#2B31E9] focus:ring-2 focus:ring-[#2B31E9]/25 outline-none pl-10 pr-3 text-sm sm:text-[15px] text-ink-800 placeholder:text-ink-400 transition"
+                    className="h-11 w-full rounded-xl border border-white/80 bg-white/78 pl-10 pr-3 text-sm text-ink-800 transition placeholder:text-ink-400 focus:border-[#2B31E9] focus:ring-2 focus:ring-[#2B31E9]/25 focus:outline-none sm:h-[46px] sm:text-[15px]"
                     required
                   />
                 </div>
@@ -124,7 +121,7 @@ export default function LoginPage() {
                     placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full h-11 sm:h-12 2xl:h-[52px] rounded-xl 2xl:rounded-2xl bg-white/75 border border-white/80 focus:border-[#2B31E9] focus:ring-2 focus:ring-[#2B31E9]/25 outline-none pl-10 pr-10 text-sm sm:text-[15px] text-ink-800 placeholder:text-ink-400 transition"
+                    className="h-11 w-full rounded-xl border border-white/80 bg-white/78 pl-10 pr-10 text-sm text-ink-800 transition placeholder:text-ink-400 focus:border-[#2B31E9] focus:ring-2 focus:ring-[#2B31E9]/25 focus:outline-none sm:h-[46px] sm:text-[15px]"
                     required
                   />
                   <button
@@ -139,7 +136,7 @@ export default function LoginPage() {
                   </button>
                 </div>
 
-                <div className="flex justify-end -mt-1">
+                <div className="flex justify-end pt-0.5">
                   <button
                     type="button"
                     className="text-xs sm:text-[13px] text-ink-500 hover:text-ink-700 transition-colors"
@@ -151,13 +148,13 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full h-11 sm:h-12 2xl:h-[52px] rounded-xl 2xl:rounded-2xl bg-gradient-to-b from-[#1f2335] to-[#0d1020] text-white text-sm sm:text-[15px] font-semibold shadow-[0_8px_20px_rgba(17,24,39,0.45)] hover:from-[#22283f] hover:to-[#10142b] disabled:opacity-60 disabled:cursor-not-allowed transition"
+                  className="mt-1 h-11 w-full rounded-xl bg-gradient-to-b from-[#1f2335] to-[#0d1020] text-sm font-semibold text-white shadow-[0_8px_20px_rgba(17,24,39,0.34)] transition hover:from-[#22283f] hover:to-[#10142b] disabled:cursor-not-allowed disabled:opacity-60 sm:h-[46px] sm:text-[15px]"
                 >
                   {isLoading ? "Signing in..." : "Continue"}
                 </button>
               </form>
 
-              <p className="mt-5 sm:mt-6 text-center text-sm sm:text-[15px] text-ink-600">
+              <p className="mt-4 text-center text-sm text-ink-600 sm:mt-5 sm:text-[15px]">
                 New here?{" "}
                 <Link
                   to="/signup"
@@ -168,7 +165,7 @@ export default function LoginPage() {
               </p>
 
               {import.meta.env.VITE_ENABLE_DEMO_MODE === "true" && (
-                <p className="mt-3 text-center text-xs text-ink-500">
+                <p className="mt-2.5 text-center text-xs text-ink-500">
                   Demo mode active: any email and password can sign in.
                 </p>
               )}
