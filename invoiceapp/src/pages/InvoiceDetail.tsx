@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { jsPDF } from "jspdf";
 import {
   ArrowLeft,
   Pencil,
@@ -41,7 +42,7 @@ export default function InvoiceDetailPage() {
   const navigate = useNavigate();
   const { invoices, updateInvoice, deleteInvoice } = useInvoices();
   const { customers } = useCustomers();
-  const { info } = useNotification();
+  const { success, error } = useNotification();
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
@@ -79,10 +80,147 @@ export default function InvoiceDetailPage() {
   }
 
   function handleDownload() {
-    info(
-      "Download coming soon",
-      "PDF export will be available in the next release.",
-    );
+    if (!invoice) return;
+
+    try {
+      const doc = new jsPDF({ unit: "pt", format: "a4" });
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const left = 40;
+      const right = pageWidth - 40;
+      let y = 52;
+
+      const statusValue = (
+        invoice.status ?? (invoice as { payment_status?: string }).payment_status
+      )
+        ?.toString()
+        .toUpperCase() || "UNPAID";
+
+      const resolvedInvoiceNumber = invoice.invoice_number?.trim()
+        ? invoice.invoice_number
+        : `INV-${String(invoice.id).padStart(3, "0")}`;
+
+      const resolvedCreatedDate =
+        invoice.created_at ??
+        (invoice as { createdAt?: string }).createdAt ??
+        (invoice as { date?: string }).date;
+
+      const resolvedDueDate =
+        invoice.due_date ??
+        (invoice as { dueDate?: string }).dueDate ??
+        (invoice as { due?: string }).due;
+
+      const customerName =
+        invoice.customer?.name ??
+        customerNameById.get(invoice.customer_id) ??
+        `Customer #${invoice.customer_id}`;
+
+      const customerEmail =
+        invoice.customer?.email ?? customerEmailById.get(invoice.customer_id) ?? "";
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(22);
+      doc.text("INVOICE", left, y);
+
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      doc.text(`Status: ${statusValue}`, right, y, { align: "right" });
+
+      y += 26;
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(13);
+      doc.text(resolvedInvoiceNumber, left, y);
+
+      y += 18;
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      doc.text(`Created: ${formatDate(resolvedCreatedDate)}`, left, y);
+      doc.text(`Due: ${formatDate(resolvedDueDate)}`, left + 160, y);
+
+      y += 28;
+      doc.setDrawColor(220, 226, 236);
+      doc.line(left, y, right, y);
+
+      y += 24;
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(11);
+      doc.text("Bill To", left, y);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      y += 16;
+      doc.text(customerName, left, y);
+      if (customerEmail) {
+        y += 14;
+        doc.text(customerEmail, left, y);
+      }
+
+      y += 28;
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      doc.text("Item", left, y);
+      doc.text("Qty", left + 285, y, { align: "right" });
+      doc.text("Unit", left + 390, y, { align: "right" });
+      doc.text("Total", right, y, { align: "right" });
+
+      y += 10;
+      doc.line(left, y, right, y);
+      y += 18;
+
+      doc.setFont("helvetica", "normal");
+      const lineItems = invoice.items ?? [];
+      for (const item of lineItems) {
+        if (y > 700) {
+          doc.addPage();
+          y = 52;
+        }
+
+        doc.text(item.item_name, left, y);
+        doc.text(String(item.quantity), left + 285, y, { align: "right" });
+        doc.text(formatCurrency(item.unit_price), left + 390, y, {
+          align: "right",
+        });
+        doc.text(
+          formatCurrency(item.total_price ?? item.quantity * item.unit_price),
+          right,
+          y,
+          { align: "right" },
+        );
+
+        y += 18;
+      }
+
+      y += 6;
+      doc.line(left, y, right, y);
+      y += 22;
+
+      doc.setFont("helvetica", "normal");
+      doc.text("Subtotal", right - 120, y, { align: "right" });
+      doc.text(formatCurrency(invoice.subtotal), right, y, { align: "right" });
+
+      y += 16;
+      doc.text("Tax (15%)", right - 120, y, { align: "right" });
+      doc.text(formatCurrency(invoice.tax), right, y, { align: "right" });
+
+      y += 22;
+      doc.setFont("helvetica", "bold");
+      doc.text("Total", right - 120, y, { align: "right" });
+      doc.text(formatCurrency(invoice.total), right, y, { align: "right" });
+
+      if (invoice.notes) {
+        y += 30;
+        doc.setFont("helvetica", "bold");
+        doc.text("Notes", left, y);
+        y += 14;
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        const wrappedNotes = doc.splitTextToSize(invoice.notes, right - left);
+        doc.text(wrappedNotes, left, y);
+      }
+
+      doc.save(`${resolvedInvoiceNumber}.pdf`);
+      success("PDF downloaded", `${resolvedInvoiceNumber}.pdf has been saved.`);
+    } catch {
+      error("Download failed", "We could not generate the invoice PDF.");
+    }
   }
 
   if (!invoice) {
