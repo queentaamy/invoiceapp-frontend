@@ -4,6 +4,8 @@
 // Base URL is pulled from .env
 // ==============================================
 
+import type { AxiosRequestConfig } from "axios";
+import api, { normalizeApiError } from "../api/client";
 import type {
   Customer,
   Invoice,
@@ -15,10 +17,6 @@ import type {
   AuthUser,
 } from "../types";
 
-const configuredBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim();
-const BASE_URL = configuredBaseUrl
-  ? configuredBaseUrl.replace(/\/+$/, "")
-  : "https://invoice-flow-cktz.onrender.com";
 const TOKEN_KEY = "invoiceflow_token";
 
 // ── Helpers ──────────────────────────────────
@@ -44,17 +42,6 @@ function setToken(token: string): void {
 
 function removeToken(): void {
   localStorage.removeItem(TOKEN_KEY);
-}
-
-async function parseResponseBody(response: Response): Promise<unknown> {
-  const text = await response.text();
-  if (!text.trim()) return {};
-
-  try {
-    return JSON.parse(text) as unknown;
-  } catch {
-    return text.trim();
-  }
 }
 
 function findStringField(
@@ -124,39 +111,16 @@ function extractAuthToken(data: unknown): string | null {
   ]);
 }
 
-async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const token = getToken();
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-    ...(options.headers as Record<string, string>),
-  };
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
-
-  let response: Response;
+async function request<T>(
+  config: AxiosRequestConfig,
+  fallbackMessage: string,
+): Promise<T> {
   try {
-    response = await fetch(`${BASE_URL}${path}`, {
-      ...options,
-      headers,
-    });
+    const response = await api.request<T>(config);
+    return response.data;
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Network error";
-    throw new Error(
-      `Network request failed. This is usually caused by CORS, backend downtime, or an incorrect API URL. (${message})`,
-    );
+    throw normalizeApiError(err, fallbackMessage);
   }
-
-  if (!response.ok) {
-    const error = await response
-      .json()
-      .catch(() => ({ detail: "Request failed" }));
-    throw new Error(error.detail || `HTTP ${response.status}`);
-  }
-
-  // Handle 204 No Content
-  if (response.status === 204) return undefined as T;
-  return response.json();
 }
 
 function normalizeAuthUser(data: unknown, fallbackEmail: string): AuthUser {
@@ -183,49 +147,34 @@ function normalizeAuthUser(data: unknown, fallbackEmail: string): AuthUser {
 
 export const authService = {
   async login(credentials: AuthCredentials): Promise<AuthUser> {
-    const response = await fetch(`${BASE_URL}/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const data = await request<unknown>(
+      {
+        url: "/login",
+        method: "POST",
+        data: {
+          email: credentials.email,
+          password: credentials.password,
+        },
       },
-      body: JSON.stringify({
-        email: credentials.email,
-        password: credentials.password,
-      }),
-    });
-
-    const data = await parseResponseBody(response);
-
-    if (!response.ok) {
-      throw new Error(
-        findStringField(data, ["detail", "message", "error"]) ?? "Login failed",
-      );
-    }
+      "Login failed",
+    );
 
     return normalizeAuthUser(data, credentials.email);
   },
 
   async signup(payload: SignupPayload): Promise<AuthUser> {
-    const response = await fetch(`${BASE_URL}/signup`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const data = await request<unknown>(
+      {
+        url: "/signup",
+        method: "POST",
+        data: {
+          email: payload.email,
+          password: payload.password,
+          name: payload.name,
+        },
       },
-      body: JSON.stringify({
-        email: payload.email,
-        password: payload.password,
-        name: payload.name,
-      }),
-    });
-
-    const data = await parseResponseBody(response);
-
-    if (!response.ok) {
-      throw new Error(
-        findStringField(data, ["detail", "message", "error"]) ??
-          "Signup failed",
-      );
-    }
+      "Signup failed",
+    );
 
     return normalizeAuthUser(data, payload.email);
   },
@@ -243,32 +192,58 @@ export const authService = {
 
 export const customerService = {
   async getAll(): Promise<Customer[]> {
-    return request<Customer[]>("/customers");
+    return request<Customer[]>(
+      {
+        url: "/customers",
+        method: "GET",
+      },
+      "Failed to load customers",
+    );
   },
 
   async getById(id: number): Promise<Customer> {
-    return request<Customer>(`/customers/${id}`);
+    return request<Customer>(
+      {
+        url: `/customers/${id}`,
+        method: "GET",
+      },
+      "Failed to load customer",
+    );
   },
 
   async create(payload: CreateCustomerPayload): Promise<Customer> {
-    return request<Customer>("/customers", {
-      method: "POST",
-      body: JSON.stringify(payload),
-    });
+    return request<Customer>(
+      {
+        url: "/customers",
+        method: "POST",
+        data: payload,
+      },
+      "Failed to create customer",
+    );
   },
 
   async update(
     id: number,
     payload: Partial<CreateCustomerPayload>,
   ): Promise<Customer> {
-    return request<Customer>(`/customers/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(payload),
-    });
+    return request<Customer>(
+      {
+        url: `/customers/${id}`,
+        method: "PUT",
+        data: payload,
+      },
+      "Failed to update customer",
+    );
   },
 
   async delete(id: number): Promise<void> {
-    return request<void>(`/customers/${id}`, { method: "DELETE" });
+    await request<void>(
+      {
+        url: `/customers/${id}`,
+        method: "DELETE",
+      },
+      "Failed to delete customer",
+    );
   },
 };
 
@@ -276,29 +251,55 @@ export const customerService = {
 
 export const invoiceService = {
   async getAll(): Promise<Invoice[]> {
-    return request<Invoice[]>("/invoices");
+    return request<Invoice[]>(
+      {
+        url: "/invoices",
+        method: "GET",
+      },
+      "Failed to load invoices",
+    );
   },
 
   async getById(id: number): Promise<Invoice> {
-    return request<Invoice>(`/invoices/${id}`);
+    return request<Invoice>(
+      {
+        url: `/invoices/${id}`,
+        method: "GET",
+      },
+      "Failed to load invoice",
+    );
   },
 
   async create(payload: CreateInvoicePayload): Promise<Invoice> {
-    return request<Invoice>("/invoices", {
-      method: "POST",
-      body: JSON.stringify(payload),
-    });
+    return request<Invoice>(
+      {
+        url: "/invoices",
+        method: "POST",
+        data: payload,
+      },
+      "Failed to create invoice",
+    );
   },
 
   async update(id: number, payload: UpdateInvoicePayload): Promise<Invoice> {
-    return request<Invoice>(`/invoices/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(payload),
-    });
+    return request<Invoice>(
+      {
+        url: `/invoices/${id}`,
+        method: "PUT",
+        data: payload,
+      },
+      "Failed to update invoice",
+    );
   },
 
   async delete(id: number): Promise<void> {
-    return request<void>(`/invoices/${id}`, { method: "DELETE" });
+    await request<void>(
+      {
+        url: `/invoices/${id}`,
+        method: "DELETE",
+      },
+      "Failed to delete invoice",
+    );
   },
 };
 
