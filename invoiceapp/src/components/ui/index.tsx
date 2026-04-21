@@ -79,7 +79,7 @@ export function Modal({
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center p-4">
       <div
-        className="modal-overlay-enter absolute inset-0 bg-transparent backdrop-blur-sm"
+        className="modal-overlay-enter absolute inset-0 bg-white/10 backdrop-blur-md"
         onClick={onClose}
       />
       <div
@@ -229,7 +229,7 @@ export function ConfirmDialog({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
-        className="modal-overlay-enter absolute inset-0 bg-transparent backdrop-blur-sm"
+        className="modal-overlay-enter absolute inset-0 bg-white/10 backdrop-blur-md"
         onClick={onClose}
       />
       <div className="modal-panel-enter relative w-full max-w-sm bg-white rounded-2xl shadow-float p-6">
