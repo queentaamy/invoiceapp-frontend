@@ -111,6 +111,82 @@ function extractAuthToken(data: unknown): string | null {
   ]);
 }
 
+function extractStoredNameForEmail(email: string): string | null {
+  const storedUser = localStorage.getItem("invoiceflow_user");
+  if (!storedUser) return null;
+
+  try {
+    const user = JSON.parse(storedUser) as { email?: unknown; name?: unknown };
+    const storedEmail =
+      typeof user.email === "string" ? user.email.trim().toLowerCase() : "";
+    const targetEmail = email.trim().toLowerCase();
+
+    if (storedEmail !== targetEmail) return null;
+
+    const storedName = typeof user.name === "string" ? user.name.trim() : "";
+    return storedName || null;
+  } catch {
+    return null;
+  }
+}
+
+function isEmailPrefixName(name: string, email: string): boolean {
+  const localPart = email.split("@")[0]?.trim().toLowerCase();
+  return !!localPart && name.trim().toLowerCase() === localPart;
+}
+
+function needsProfileName(user: AuthUser): boolean {
+  const trimmedName = user.name.trim();
+  if (!trimmedName || trimmedName.toLowerCase() === "user") return true;
+  return isEmailPrefixName(trimmedName, user.email);
+}
+
+async function fetchCurrentUserProfileName(): Promise<string | null> {
+  const profileEndpoints = ["/me", "/profile", "/users/me", "/auth/me"];
+
+  for (const url of profileEndpoints) {
+    try {
+      const response = await api.request<unknown>({ url, method: "GET" });
+      const profile = response.data;
+
+      const directName = findStringField(profile, [
+        "name",
+        "full_name",
+        "display_name",
+        "displayName",
+        "user_name",
+        "username",
+      ]);
+      if (directName) return directName;
+
+      const firstName = findStringField(profile, [
+        "first_name",
+        "firstName",
+        "given_name",
+        "givenName",
+      ]);
+      const lastName = findStringField(profile, [
+        "last_name",
+        "lastName",
+        "family_name",
+        "familyName",
+        "surname",
+      ]);
+
+      const fullName = [firstName, lastName]
+        .filter((part): part is string => !!part)
+        .join(" ")
+        .trim();
+
+      if (fullName) return fullName;
+    } catch {
+      // Some backends won't expose all profile endpoints. Continue trying.
+    }
+  }
+
+  return null;
+}
+
 async function request<T>(
   config: AxiosRequestConfig,
   fallbackMessage: string,
@@ -123,7 +199,11 @@ async function request<T>(
   }
 }
 
-function normalizeAuthUser(data: unknown, fallbackEmail: string): AuthUser {
+function normalizeAuthUser(
+  data: unknown,
+  fallbackEmail: string,
+  fallbackName?: string,
+): AuthUser {
   const accessToken = extractAuthToken(data);
 
   if (!accessToken) {
@@ -133,12 +213,47 @@ function normalizeAuthUser(data: unknown, fallbackEmail: string): AuthUser {
   setToken(accessToken);
   localStorage.setItem("token", accessToken);
 
+  const resolvedEmail =
+    findStringField(data, ["email", "user_email"]) ?? fallbackEmail;
+
+  const directName = findStringField(data, [
+    "name",
+    "full_name",
+    "display_name",
+    "displayName",
+    "user_name",
+    "username",
+  ]);
+
+  const firstName = findStringField(data, [
+    "first_name",
+    "firstName",
+    "given_name",
+    "givenName",
+  ]);
+  const lastName = findStringField(data, [
+    "last_name",
+    "lastName",
+    "family_name",
+    "familyName",
+    "surname",
+  ]);
+
+  const combinedName = [firstName, lastName]
+    .filter((part): part is string => !!part)
+    .join(" ")
+    .trim();
+
+  const storedName = extractStoredNameForEmail(resolvedEmail);
+
   return {
     id: findNumberField(data, ["id", "user_id", "userId"]) ?? 0,
     name:
-      findStringField(data, ["name", "full_name", "username"]) ??
-      fallbackEmail.split("@")[0],
-    email: findStringField(data, ["email", "user_email"]) ?? fallbackEmail,
+      (directName ?? combinedName) ||
+      fallbackName?.trim() ||
+      storedName ||
+      "User",
+    email: resolvedEmail,
     token: accessToken,
   };
 }
@@ -159,7 +274,21 @@ export const authService = {
       "Login failed",
     );
 
-    return normalizeAuthUser(data, credentials.email);
+    const user = normalizeAuthUser(data, credentials.email);
+
+    if (!needsProfileName(user)) {
+      return user;
+    }
+
+    const profileName = await fetchCurrentUserProfileName();
+    if (!profileName) {
+      return user;
+    }
+
+    return {
+      ...user,
+      name: profileName,
+    };
   },
 
   async signup(payload: SignupPayload): Promise<AuthUser> {
@@ -176,7 +305,7 @@ export const authService = {
       "Signup failed",
     );
 
-    return normalizeAuthUser(data, payload.email);
+    return normalizeAuthUser(data, payload.email, payload.name);
   },
 
   logout(): void {
