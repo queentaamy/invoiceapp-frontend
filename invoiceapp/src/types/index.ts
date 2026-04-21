@@ -71,6 +71,12 @@ export interface AuthUser {
   token: string;
 }
 
+export interface AuthProfile {
+  id?: number;
+  name?: string;
+  email?: string;
+}
+
 export interface ApiResponse<T> {
   data: T;
   message?: string;

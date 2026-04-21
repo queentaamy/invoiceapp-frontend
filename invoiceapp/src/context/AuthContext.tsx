@@ -46,8 +46,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
     try {
       const userData = await authService.login(credentials);
-      setUser(userData);
-      localStorage.setItem("invoiceflow_user", JSON.stringify(userData));
+      let nextUser = userData;
+
+      try {
+        const profile = await authService.getProfile();
+        localStorage.setItem("invoiceflow_profile", JSON.stringify(profile));
+
+        nextUser = {
+          ...userData,
+          id: profile.id ?? userData.id,
+          email: profile.email ?? userData.email,
+          name: profile.name ?? userData.name,
+        };
+      } catch {
+        localStorage.removeItem("invoiceflow_profile");
+      }
+
+      setUser(nextUser);
+      localStorage.setItem("invoiceflow_user", JSON.stringify(nextUser));
     } finally {
       setIsLoading(false);
     }
@@ -78,6 +94,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(() => {
     authService.logout();
     localStorage.removeItem("invoiceflow_user");
+    localStorage.removeItem("invoiceflow_profile");
     localStorage.removeItem("invoiceflow_customers");
     localStorage.removeItem("invoiceflow_invoices");
     setUser(null);

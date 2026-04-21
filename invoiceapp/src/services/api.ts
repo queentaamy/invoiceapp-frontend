@@ -15,6 +15,7 @@ import type {
   AuthCredentials,
   SignupPayload,
   AuthUser,
+  AuthProfile,
 } from "../types";
 
 const TOKEN_KEY = "invoiceflow_token";
@@ -130,57 +131,40 @@ function extractStoredNameForEmail(email: string): string | null {
   }
 }
 
-function isEmailPrefixName(name: string, email: string): boolean {
-  const localPart = email.split("@")[0]?.trim().toLowerCase();
-  return !!localPart && name.trim().toLowerCase() === localPart;
-}
+function normalizeAuthProfile(data: unknown): AuthProfile {
+  const directName = findStringField(data, [
+    "name",
+    "full_name",
+    "display_name",
+    "displayName",
+    "user_name",
+    "username",
+  ]);
 
-function needsProfileName(user: AuthUser): boolean {
-  const trimmedName = user.name.trim();
-  if (!trimmedName || trimmedName.toLowerCase() === "user") return true;
-  return isEmailPrefixName(trimmedName, user.email);
-}
+  const firstName = findStringField(data, [
+    "first_name",
+    "firstName",
+    "given_name",
+    "givenName",
+  ]);
+  const lastName = findStringField(data, [
+    "last_name",
+    "lastName",
+    "family_name",
+    "familyName",
+    "surname",
+  ]);
 
-async function fetchCurrentUserProfileName(): Promise<string | null> {
-  try {
-    const response = await api.request<unknown>({ url: "/profile", method: "GET" });
-    const profile = response.data;
+  const combinedName = [firstName, lastName]
+    .filter((part): part is string => !!part)
+    .join(" ")
+    .trim();
 
-    const directName = findStringField(profile, [
-      "name",
-      "full_name",
-      "display_name",
-      "displayName",
-      "user_name",
-      "username",
-    ]);
-    if (directName) return directName;
-
-    const firstName = findStringField(profile, [
-      "first_name",
-      "firstName",
-      "given_name",
-      "givenName",
-    ]);
-    const lastName = findStringField(profile, [
-      "last_name",
-      "lastName",
-      "family_name",
-      "familyName",
-      "surname",
-    ]);
-
-    const fullName = [firstName, lastName]
-      .filter((part): part is string => !!part)
-      .join(" ")
-      .trim();
-
-    if (fullName) return fullName;
-  } catch {
-    // Profile endpoint may fail for some sessions; keep login fallback behavior.
-  }
-
-  return null;
+  return {
+    id: findNumberField(data, ["id", "user_id", "userId"]) ?? undefined,
+    email: findStringField(data, ["email", "user_email"]) ?? undefined,
+    name: (directName ?? combinedName) || undefined,
+  };
 }
 
 async function request<T>(
@@ -270,21 +254,19 @@ export const authService = {
       "Login failed",
     );
 
-    const user = normalizeAuthUser(data, credentials.email);
+    return normalizeAuthUser(data, credentials.email);
+  },
 
-    if (!needsProfileName(user)) {
-      return user;
-    }
+  async getProfile(): Promise<AuthProfile> {
+    const data = await request<unknown>(
+      {
+        url: "/profile",
+        method: "GET",
+      },
+      "Failed to load profile",
+    );
 
-    const profileName = await fetchCurrentUserProfileName();
-    if (!profileName) {
-      return user;
-    }
-
-    return {
-      ...user,
-      name: profileName,
-    };
+    return normalizeAuthProfile(data);
   },
 
   async signup(payload: SignupPayload): Promise<AuthUser> {
