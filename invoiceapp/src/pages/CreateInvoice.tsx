@@ -153,85 +153,93 @@ export default function CreateInvoicePage() {
                 </Button>
               </div>
 
-              {/* Column headers */}
-              <div className="grid grid-cols-12 gap-2 mb-3">
-                <div className="col-span-6 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Description
-                </div>
-                <div className="col-span-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Qty
-                </div>
-                <div className="col-span-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Unit Price
-                </div>
-                <div className="col-span-1" />
-              </div>
-
-              <div className="flex flex-col gap-2.5">
-                {items.map((item, i) => (
-                  <div
-                    key={i}
-                    className="grid grid-cols-12 items-start gap-2 border-b border-zinc-200 pb-2 last:border-b-0 last:pb-0"
-                  >
-                    <div className="col-span-6">
-                      <Input
-                        placeholder="e.g. Web Design"
-                        value={item.item_name}
-                        onChange={(e) =>
-                          updateItem(i, "item_name", e.target.value)
-                        }
-                        error={errors[`item_${i}_name`]}
-                      />
+              <div className="overflow-x-auto">
+                <div className="min-w-[620px]">
+                  {/* Column headers */}
+                  <div className="mb-3 grid grid-cols-12 gap-2">
+                    <div className="col-span-6 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      Description
                     </div>
-                    <div className="col-span-2">
-                      <Input
-                        type="number"
-                        min="1"
-                        step="1"
-                        value={item.quantity}
-                        onChange={(e) =>
-                          updateItem(i, "quantity", toMinimumQuantity(e.target.value))
-                        }
-                        error={errors[`item_${i}_qty`]}
-                      />
+                    <div className="col-span-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      Qty
                     </div>
-                    <div className="col-span-3">
-                      <Input
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        placeholder="0.00"
-                        value={item.unit_price || ""}
-                        onChange={(e) =>
-                          updateItem(i, "unit_price", Number(e.target.value))
-                        }
-                        error={errors[`item_${i}_price`]}
-                      />
+                    <div className="col-span-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      Unit Price
                     </div>
-                    <div className="col-span-1 flex justify-center pt-0.5">
-                      <button
-                        type="button"
-                        onClick={() => removeItem(i)}
-                        disabled={items.length === 1}
-                        className="rounded-lg p-2 text-muted-foreground transition-all hover:bg-red-50 hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-30"
-                      >
-                        <Trash2 size={13} />
-                      </button>
-                    </div>
-
-                    {/* Subtotal for this line */}
-                    {item.item_name && item.unit_price > 0 && (
-                      <div className="col-span-12 -mt-1 px-1">
-                        <p className="text-xs text-muted-foreground">
-                          Line total:{" "}
-                          <span className="font-medium text-foreground/80">
-                            {formatCurrency(item.quantity * item.unit_price)}
-                          </span>
-                        </p>
-                      </div>
-                    )}
+                    <div className="col-span-1" />
                   </div>
-                ))}
+
+                  <div className="flex flex-col gap-2.5">
+                    {items.map((item, i) => (
+                      <div
+                        key={i}
+                        className="grid grid-cols-12 items-start gap-2 border-b border-zinc-200 pb-2 last:border-b-0 last:pb-0"
+                      >
+                        <div className="col-span-6">
+                          <Input
+                            placeholder="e.g. Web Design"
+                            value={item.item_name}
+                            onChange={(e) =>
+                              updateItem(i, "item_name", e.target.value)
+                            }
+                            error={errors[`item_${i}_name`]}
+                          />
+                        </div>
+                        <div className="col-span-2">
+                          <Input
+                            type="number"
+                            min="1"
+                            step="1"
+                            value={item.quantity}
+                            onChange={(e) =>
+                              updateItem(
+                                i,
+                                "quantity",
+                                toMinimumQuantity(e.target.value),
+                              )
+                            }
+                            error={errors[`item_${i}_qty`]}
+                          />
+                        </div>
+                        <div className="col-span-3">
+                          <Input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            placeholder="0.00"
+                            value={item.unit_price || ""}
+                            onChange={(e) =>
+                              updateItem(i, "unit_price", Number(e.target.value))
+                            }
+                            error={errors[`item_${i}_price`]}
+                          />
+                        </div>
+                        <div className="col-span-1 flex justify-center pt-0.5">
+                          <button
+                            type="button"
+                            onClick={() => removeItem(i)}
+                            disabled={items.length === 1}
+                            className="rounded-lg p-2 text-muted-foreground transition-all hover:bg-red-50 hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-30"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+
+                        {/* Subtotal for this line */}
+                        {item.item_name && item.unit_price > 0 && (
+                          <div className="col-span-12 -mt-1 px-1">
+                            <p className="text-xs text-muted-foreground">
+                              Line total:{" "}
+                              <span className="font-medium text-foreground/80">
+                                {formatCurrency(item.quantity * item.unit_price)}
+                              </span>
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -250,7 +258,7 @@ export default function CreateInvoicePage() {
           {/* Summary sidebar */}
           <div className="flex flex-col gap-4">
             {/* Totals */}
-            <div className="sticky top-24 rounded-xl bg-card p-5 shadow-none ring-1 ring-zinc-200 sm:p-6">
+            <div className="rounded-xl bg-card p-5 shadow-none ring-1 ring-zinc-200 sm:p-6 lg:sticky lg:top-24">
               <div className="mb-4 flex items-center gap-2">
                 <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#eef0ff]">
                   <Calculator size={14} className="text-[#2B31E9]" />

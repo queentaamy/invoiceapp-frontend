@@ -198,7 +198,7 @@ export default function InvoicesPage() {
       </div>
 
       {/* Table */}
-      <div className="mt-4 overflow-hidden rounded-xl bg-card shadow-none ring-1 ring-zinc-200">
+      <div className="mt-4 overflow-x-auto rounded-xl bg-card shadow-none ring-1 ring-zinc-200">
         {isLoading ? (
           <div className="divide-y divide-zinc-200 px-5">
             {[...Array(5)].map((_, i) => (
@@ -235,7 +235,7 @@ export default function InvoicesPage() {
             />
           </div>
         ) : (
-          <>
+          <div className="min-w-[760px]">
             {/* Header */}
             <div className="grid grid-cols-12 gap-x-4 border-b border-zinc-200 bg-muted/40 px-5 py-2.5 lg:grid-cols-7">
               <div className="col-span-6 text-xs font-semibold uppercase tracking-wide text-muted-foreground md:col-span-4 lg:col-span-1">
@@ -341,7 +341,7 @@ export default function InvoicesPage() {
                 {filtered.length} invoice{filtered.length !== 1 ? "s" : ""}
               </p>
             </div>
-          </>
+          </div>
         )}
       </div>
 

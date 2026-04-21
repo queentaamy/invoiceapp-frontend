@@ -213,7 +213,7 @@ export default function DashboardPage() {
         </Card>
       </section>
 
-      <Card className="min-h-[70vh] flex-1 rounded-xl bg-card shadow-none ring-1 ring-zinc-200 md:min-h-min">
+      <Card className="min-h-[45vh] flex-1 rounded-xl bg-card shadow-none ring-1 ring-zinc-200 md:min-h-min">
         <CardHeader className="border-b border-zinc-200">
           <div className="flex items-center justify-between gap-3">
             <CardTitle className="text-lg">Recent Invoices</CardTitle>

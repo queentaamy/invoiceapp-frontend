@@ -116,7 +116,7 @@ export default function CustomersPage() {
       </div>
 
       {/* Customer list */}
-      <div className="overflow-hidden rounded-xl bg-card shadow-none ring-1 ring-zinc-200">
+      <div className="overflow-x-auto rounded-xl bg-card shadow-none ring-1 ring-zinc-200">
         {isLoading ? (
           <div className="px-5 divide-y divide-zinc-200">
             {[...Array(5)].map((_, i) => (
@@ -146,7 +146,7 @@ export default function CustomersPage() {
             }
           />
         ) : (
-          <>
+          <div className="min-w-[720px]">
             {/* Table header */}
             <div className="grid grid-cols-12 border-b border-zinc-200 bg-muted/40 px-5 py-2.5">
               <div className="col-span-7 text-xs font-semibold uppercase tracking-wide text-muted-foreground md:col-span-5 lg:col-span-4">
@@ -233,7 +233,7 @@ export default function CustomersPage() {
                 </div>
               ))}
             </div>
-          </>
+          </div>
         )}
       </div>
 
