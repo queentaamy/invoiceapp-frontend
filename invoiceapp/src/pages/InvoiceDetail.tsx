@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   ArrowLeft,
@@ -16,6 +16,7 @@ import { Layout } from "../components/layout/Layout";
 import { Button } from "../components/ui/Button";
 import { StatusBadge, ConfirmDialog } from "../components/ui/index";
 import { useInvoices } from "../hooks/useInvoices";
+import { useCustomers } from "../hooks/useCustomers";
 import { useNotification } from "../context/NotificationContext";
 import type { Invoice, InvoiceStatus } from "../types";
 
@@ -39,6 +40,7 @@ export default function InvoiceDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { invoices, updateInvoice, deleteInvoice } = useInvoices();
+  const { customers } = useCustomers();
   const { info } = useNotification();
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -49,6 +51,16 @@ export default function InvoiceDetailPage() {
     const found = invoices.find((i) => i.id === Number(id));
     if (found) setInvoice(found);
   }, [invoices, id]);
+
+  const customerNameById = useMemo(
+    () => new Map(customers.map((c) => [c.id, c.name])),
+    [customers],
+  );
+
+  const customerEmailById = useMemo(
+    () => new Map(customers.map((c) => [c.id, c.email])),
+    [customers],
+  );
 
   async function handleDelete() {
     if (!invoice) return;
@@ -95,11 +107,39 @@ export default function InvoiceDetailPage() {
     );
   }
 
-  const status = (invoice.status ?? "draft") as InvoiceStatus;
+  const rawStatus = (
+    invoice.status ?? (invoice as { payment_status?: string }).payment_status
+  )
+    ?.toString()
+    .toLowerCase();
+
+  const status: InvoiceStatus =
+    rawStatus === "paid" ||
+    rawStatus === "unpaid" ||
+    rawStatus === "overdue" ||
+    rawStatus === "draft"
+      ? rawStatus
+      : (invoice as { is_paid?: boolean }).is_paid
+        ? "paid"
+        : "unpaid";
+
+  const createdDate =
+    invoice.created_at ??
+    (invoice as { createdAt?: string }).createdAt ??
+    (invoice as { date?: string }).date;
+
+  const dueDate =
+    invoice.due_date ??
+    (invoice as { dueDate?: string }).dueDate ??
+    (invoice as { due?: string }).due;
+
+  const invoiceNumber = invoice.invoice_number?.trim()
+    ? invoice.invoice_number
+    : `INV-${String(invoice.id).padStart(3, "0")}`;
 
   return (
     <Layout
-      title={invoice.invoice_number}
+      title={invoiceNumber}
       actions={
         <div className="flex items-center gap-2">
           {status !== "paid" && (
@@ -151,7 +191,7 @@ export default function InvoiceDetailPage() {
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-xs font-mono text-muted-foreground">
-                    {invoice.invoice_number}
+                    {invoiceNumber}
                   </span>
                   <StatusBadge status={status} />
                 </div>
@@ -169,7 +209,7 @@ export default function InvoiceDetailPage() {
                   <Calendar size={11} /> Created
                 </p>
                 <p className="text-sm font-medium text-foreground">
-                  {formatDate(invoice.created_at)}
+                  {formatDate(createdDate)}
                 </p>
               </div>
               <div>
@@ -177,7 +217,7 @@ export default function InvoiceDetailPage() {
                   <Calendar size={11} /> Due date
                 </p>
                 <p className="text-sm font-medium text-foreground">
-                  {formatDate(invoice.due_date)}
+                  {formatDate(dueDate)}
                 </p>
               </div>
               <div>
@@ -284,9 +324,17 @@ export default function InvoiceDetailPage() {
                 </p>
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground">
-                Customer #{invoice.customer_id}
-              </p>
+              <div className="flex flex-col gap-1.5">
+                <p className="font-semibold text-foreground">
+                  {customerNameById.get(invoice.customer_id) ??
+                    `Customer #${invoice.customer_id}`}
+                </p>
+                {customerEmailById.get(invoice.customer_id) ? (
+                  <p className="text-sm text-muted-foreground">
+                    {customerEmailById.get(invoice.customer_id)}
+                  </p>
+                ) : null}
+              </div>
             )}
           </div>
 
@@ -356,7 +404,7 @@ export default function InvoiceDetailPage() {
         onClose={() => setShowDelete(false)}
         onConfirm={handleDelete}
         title="Delete this invoice?"
-        message={`Invoice ${invoice.invoice_number} will be permanently deleted.`}
+        message={`Invoice ${invoiceNumber} will be permanently deleted.`}
         confirmLabel="Delete Invoice"
         isLoading={isDeleting}
       />

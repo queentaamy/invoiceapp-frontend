@@ -85,10 +85,18 @@ export default function InvoicesPage() {
     );
   };
 
+  const resolveInvoiceNumber = (invoice: (typeof invoices)[number]) => {
+    const rawNumber = invoice.invoice_number?.toString().trim();
+    if (rawNumber) return rawNumber;
+    return `INV-${String(invoice.id).padStart(3, "0")}`;
+  };
+
   const filtered = useMemo(() => {
     return invoices.filter((inv) => {
       const matchSearch =
-        inv.invoice_number.toLowerCase().includes(search.toLowerCase()) ||
+        resolveInvoiceNumber(inv)
+          .toLowerCase()
+          .includes(search.toLowerCase()) ||
         (inv.customer?.name ?? customerNameById.get(inv.customer_id) ?? "")
           .toLowerCase()
           .includes(search.toLowerCase());
@@ -228,7 +236,7 @@ export default function InvoicesPage() {
             </div>
 
             <div className="divide-y divide-zinc-200">
-              {filtered.map((inv, index) => (
+              {filtered.map((inv) => (
                 <Link
                   key={inv.id}
                   to={`/invoices/${inv.id}`}
@@ -240,7 +248,7 @@ export default function InvoicesPage() {
                       <FileText size={12} className="text-muted-foreground" />
                     </div>
                     <span className="font-mono text-sm font-medium text-foreground">
-                      {`INV-${String(index + 1).padStart(3, "0")}`}
+                      {resolveInvoiceNumber(inv)}
                     </span>
                   </div>
 
