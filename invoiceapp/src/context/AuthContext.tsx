@@ -66,10 +66,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const userData = await authService.signup(payload);
       setUser(userData);
       localStorage.setItem("invoiceflow_user", JSON.stringify(userData));
+    } catch (error) {
+      setUser(null);
+      localStorage.removeItem("invoiceflow_user");
+      throw error;
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [];
 
   const logout = useCallback(() => {
     authService.logout();
