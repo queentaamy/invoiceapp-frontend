@@ -46,6 +46,17 @@ function removeToken(): void {
   localStorage.removeItem(TOKEN_KEY);
 }
 
+async function parseResponseBody(response: Response): Promise<unknown> {
+  const text = await response.text();
+  if (!text.trim()) return {};
+
+  try {
+    return JSON.parse(text) as unknown;
+  } catch {
+    return text.trim();
+  }
+}
+
 function findStringField(
   value: unknown,
   keys: string[],
@@ -99,6 +110,11 @@ function findNumberField(
 }
 
 function extractAuthToken(data: unknown): string | null {
+  if (typeof data === "string") {
+    const trimmed = data.trim();
+    return trimmed || null;
+  }
+
   return findStringField(data, [
     "access_token",
     "accessToken",
@@ -143,10 +159,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   return response.json();
 }
 
-function normalizeAuthUser(
-  data: Record<string, unknown>,
-  fallbackEmail: string,
-): AuthUser {
+function normalizeAuthUser(data: unknown, fallbackEmail: string): AuthUser {
   const accessToken = extractAuthToken(data);
 
   if (!accessToken) {
@@ -181,13 +194,11 @@ export const authService = {
       }),
     });
 
-    const data = await response
-      .json()
-      .catch(() => ({}) as Record<string, unknown>);
+    const data = await parseResponseBody(response);
 
     if (!response.ok) {
       throw new Error(
-        typeof data?.detail === "string" ? data.detail : "Login failed",
+        findStringField(data, ["detail", "message", "error"]) ?? "Login failed",
       );
     }
 
@@ -207,13 +218,12 @@ export const authService = {
       }),
     });
 
-    const data = await response
-      .json()
-      .catch(() => ({}) as Record<string, unknown>);
+    const data = await parseResponseBody(response);
 
     if (!response.ok) {
       throw new Error(
-        typeof data?.detail === "string" ? data.detail : "Signup failed",
+        findStringField(data, ["detail", "message", "error"]) ??
+          "Signup failed",
       );
     }
 
