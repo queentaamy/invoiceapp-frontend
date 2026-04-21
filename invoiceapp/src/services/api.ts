@@ -18,8 +18,7 @@ import type {
 const configuredBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim();
 const BASE_URL = configuredBaseUrl
   ? configuredBaseUrl.replace(/\/+$/, "")
-  : "/api";
-const API = BASE_URL;
+  : "https://invoice-flow-cktz.onrender.com";
 const TOKEN_KEY = "invoiceflow_token";
 
 // ── Helpers ──────────────────────────────────
@@ -71,11 +70,38 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   return response.json();
 }
 
+function normalizeAuthUser(
+  data: Record<string, unknown>,
+  fallbackEmail: string,
+): AuthUser {
+  const accessToken =
+    typeof data.access_token === "string"
+      ? data.access_token
+      : typeof data.token === "string"
+        ? data.token
+        : null;
+
+  if (!accessToken) {
+    throw new Error("Authentication failed: no access token returned.");
+  }
+
+  setToken(accessToken);
+  localStorage.setItem("token", accessToken);
+
+  return {
+    id: typeof data.id === "number" ? data.id : 0,
+    name:
+      typeof data.name === "string" ? data.name : fallbackEmail.split("@")[0],
+    email: typeof data.email === "string" ? data.email : fallbackEmail,
+    token: accessToken,
+  };
+}
+
 // ── Auth ──────────────────────────────────────
 
 export const authService = {
   async login(credentials: AuthCredentials): Promise<AuthUser> {
-    const response = await fetch(`${API}/login`, {
+    const response = await fetch(`${BASE_URL}/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -96,40 +122,33 @@ export const authService = {
       );
     }
 
-    const accessToken =
-      typeof data?.access_token === "string"
-        ? data.access_token
-        : typeof data?.token === "string"
-          ? data.token
-          : null;
-
-    if (!accessToken) {
-      throw new Error("Login failed: no access token returned.");
-    }
-
-    setToken(accessToken);
-    localStorage.setItem("token", accessToken);
-
-    const authUser: AuthUser = {
-      id: typeof data?.id === "number" ? data.id : 0,
-      name:
-        typeof data?.name === "string"
-          ? data.name
-          : credentials.email.split("@")[0],
-      email: typeof data?.email === "string" ? data.email : credentials.email,
-      token: accessToken,
-    };
-
-    return authUser;
+    return normalizeAuthUser(data, credentials.email);
   },
 
   async signup(payload: SignupPayload): Promise<AuthUser> {
-    const data = await request<AuthUser>("/signup", {
+    const response = await fetch(`${BASE_URL}/signup`, {
       method: "POST",
-      body: JSON.stringify(payload),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: payload.email,
+        password: payload.password,
+        name: payload.name,
+      }),
     });
-    setToken(data.token);
-    return data;
+
+    const data = await response
+      .json()
+      .catch(() => ({}) as Record<string, unknown>);
+
+    if (!response.ok) {
+      throw new Error(
+        typeof data?.detail === "string" ? data.detail : "Signup failed",
+      );
+    }
+
+    return normalizeAuthUser(data, payload.email);
   },
 
   logout(): void {
