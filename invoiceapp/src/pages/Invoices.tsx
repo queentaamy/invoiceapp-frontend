@@ -149,7 +149,7 @@ export default function InvoicesPage() {
       )}
 
       {/* Filters row */}
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3 pt-4">
         <Input
           placeholder="Search by number or customer…"
           value={search}
@@ -177,7 +177,7 @@ export default function InvoicesPage() {
       </div>
 
       {/* Table */}
-      <div className="overflow-hidden rounded-xl bg-card shadow-none ring-1 ring-zinc-200">
+      <div className="mt-4 overflow-hidden rounded-xl bg-card shadow-none ring-1 ring-zinc-200">
         {isLoading ? (
           <div className="divide-y divide-zinc-200 px-5">
             {[...Array(5)].map((_, i) => (
@@ -185,32 +185,34 @@ export default function InvoicesPage() {
             ))}
           </div>
         ) : filtered.length === 0 ? (
-          <EmptyState
-            icon={<FileText size={24} />}
-            title={
-              search || statusFilter !== "all"
-                ? "No invoices match your filters"
-                : "No invoices yet"
-            }
-            description={
-              !search && statusFilter === "all"
-                ? "Create your first invoice to get started."
-                : undefined
-            }
-            action={
-              !search && statusFilter === "all" ? (
-                <Link to="/invoices/new">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    leftIcon={<Plus size={14} />}
-                  >
-                    New Invoice
-                  </Button>
-                </Link>
-              ) : undefined
-            }
-          />
+          <div className="px-5 py-3">
+            <EmptyState
+              icon={<FileText size={24} />}
+              title={
+                search || statusFilter !== "all"
+                  ? "No invoices match your filters"
+                  : "No invoices yet"
+              }
+              description={
+                !search && statusFilter === "all"
+                  ? "Create your first invoice to get started."
+                  : undefined
+              }
+              action={
+                !search && statusFilter === "all" ? (
+                  <Link to="/invoices/new">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      leftIcon={<Plus size={14} />}
+                    >
+                      New Invoice
+                    </Button>
+                  </Link>
+                ) : undefined
+              }
+            />
+          </div>
         ) : (
           <>
             {/* Header */}
