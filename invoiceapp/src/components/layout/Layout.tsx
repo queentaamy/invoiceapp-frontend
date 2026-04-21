@@ -54,7 +54,7 @@ export function Layout({
       <SidebarInset>
         <header className="sticky top-0 z-20 flex min-h-16 shrink-0 items-center border-b bg-background/95 py-2 backdrop-blur supports-[backdrop-filter]:bg-background/80">
           <div className="flex w-full flex-wrap items-center justify-between gap-2 px-3 sm:px-4 md:px-6">
-            <div className="min-w-0 flex items-center gap-2">
+            <div className="reveal-soft min-w-0 flex items-center gap-2">
               <SidebarTrigger className="-ml-1" />
               <Separator
                 orientation="vertical"
@@ -72,7 +72,7 @@ export function Layout({
                 </BreadcrumbList>
               </Breadcrumb>
             </div>
-            <div className="relative ml-auto flex items-center gap-2" ref={panelRef}>
+            <div className="reveal-soft relative ml-auto flex items-center gap-2" ref={panelRef}>
               {actions}
               <button
                 type="button"
@@ -87,7 +87,7 @@ export function Layout({
                 ) : null}
               </button>
               {isNotificationsOpen ? (
-                <div className="absolute right-0 top-10 z-50 w-[min(22rem,calc(100vw-1rem))] overflow-hidden rounded-2xl border border-border bg-background shadow-xl">
+                <div className="reveal-soft absolute right-0 top-10 z-50 w-[min(22rem,calc(100vw-1rem))] overflow-hidden rounded-2xl border border-border bg-background shadow-xl">
                   <div className="flex items-center justify-between border-b px-4 py-3">
                     <div>
                       <p className="text-sm font-semibold text-ink-900">
@@ -154,7 +154,7 @@ export function Layout({
             </div>
           </div>
         </header>
-        <main className="page-enter flex flex-1 flex-col gap-4 p-3 pt-0 sm:p-4 sm:pt-0 md:p-6 md:pt-0">
+        <main className="page-enter stagger-children flex flex-1 flex-col gap-4 p-3 pt-0 sm:p-4 sm:pt-0 md:p-6 md:pt-0">
           {children}
         </main>
       </SidebarInset>

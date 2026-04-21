@@ -22,14 +22,14 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
   ) => {
     const inputId = id || label?.toLowerCase().replace(/\s+/g, "-");
     return (
-      <div className="flex flex-col gap-1.5">
+      <div className="reveal-soft flex flex-col gap-1.5">
         {label && (
           <label htmlFor={inputId} className="text-sm font-medium text-ink-700">
             {label}
             {props.required && <span className="text-red-500 ml-0.5">*</span>}
           </label>
         )}
-        <div className="relative flex items-center">
+        <div className="relative flex items-center transition-transform duration-200 ease-out focus-within:-translate-y-0.5">
           {leftAddon && (
             <div className="absolute left-3 text-ink-400 pointer-events-none">
               {leftAddon}
@@ -74,7 +74,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
   ({ label, error, options, placeholder, className, id, ...props }, ref) => {
     const selectId = id || label?.toLowerCase().replace(/\s+/g, "-");
     return (
-      <div className="flex flex-col gap-1.5">
+      <div className="reveal-soft flex flex-col gap-1.5">
         {label && (
           <label
             htmlFor={selectId}
@@ -119,7 +119,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ label, error, hint, className, id, ...props }, ref) => {
     const textareaId = id || label?.toLowerCase().replace(/\s+/g, "-");
     return (
-      <div className="flex flex-col gap-1.5">
+      <div className="reveal-soft flex flex-col gap-1.5">
         {label && (
           <label
             htmlFor={textareaId}
