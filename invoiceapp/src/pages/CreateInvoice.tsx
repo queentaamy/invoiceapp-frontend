@@ -153,7 +153,7 @@ export default function CreateInvoicePage() {
                 </Button>
               </div>
 
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto overflow-y-hidden">
                 <div className="min-w-[620px]">
                   {/* Column headers */}
                   <div className="mb-3 grid grid-cols-12 gap-2">
