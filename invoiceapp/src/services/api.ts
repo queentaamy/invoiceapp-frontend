@@ -46,6 +46,68 @@ function removeToken(): void {
   localStorage.removeItem(TOKEN_KEY);
 }
 
+function findStringField(
+  value: unknown,
+  keys: string[],
+  depth = 0,
+): string | null {
+  if (depth > 4 || value == null) return null;
+
+  if (typeof value === "object") {
+    const record = value as Record<string, unknown>;
+
+    for (const key of keys) {
+      const candidate = record[key];
+      if (typeof candidate === "string" && candidate.trim()) {
+        return candidate.trim();
+      }
+    }
+
+    for (const nested of Object.values(record)) {
+      const found = findStringField(nested, keys, depth + 1);
+      if (found) return found;
+    }
+  }
+
+  return null;
+}
+
+function findNumberField(
+  value: unknown,
+  keys: string[],
+  depth = 0,
+): number | null {
+  if (depth > 4 || value == null) return null;
+
+  if (typeof value === "object") {
+    const record = value as Record<string, unknown>;
+
+    for (const key of keys) {
+      const candidate = record[key];
+      if (typeof candidate === "number" && Number.isFinite(candidate)) {
+        return candidate;
+      }
+    }
+
+    for (const nested of Object.values(record)) {
+      const found = findNumberField(nested, keys, depth + 1);
+      if (found != null) return found;
+    }
+  }
+
+  return null;
+}
+
+function extractAuthToken(data: unknown): string | null {
+  return findStringField(data, [
+    "access_token",
+    "accessToken",
+    "token",
+    "auth_token",
+    "jwt",
+  ]);
+}
+
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = getToken();
   const headers: Record<string, string> = {
@@ -85,12 +147,7 @@ function normalizeAuthUser(
   data: Record<string, unknown>,
   fallbackEmail: string,
 ): AuthUser {
-  const accessToken =
-    typeof data.access_token === "string"
-      ? data.access_token
-      : typeof data.token === "string"
-        ? data.token
-        : null;
+  const accessToken = extractAuthToken(data);
 
   if (!accessToken) {
     throw new Error("Authentication failed: no access token returned.");
@@ -100,10 +157,11 @@ function normalizeAuthUser(
   localStorage.setItem("token", accessToken);
 
   return {
-    id: typeof data.id === "number" ? data.id : 0,
+    id: findNumberField(data, ["id", "user_id", "userId"]) ?? 0,
     name:
-      typeof data.name === "string" ? data.name : fallbackEmail.split("@")[0],
-    email: typeof data.email === "string" ? data.email : fallbackEmail,
+      findStringField(data, ["name", "full_name", "username"]) ??
+      fallbackEmail.split("@")[0],
+    email: findStringField(data, ["email", "user_email"]) ?? fallbackEmail,
     token: accessToken,
   };
 }
