@@ -32,18 +32,78 @@ function formatDate(str?: string) {
   });
 }
 
+function toNumber(value: unknown): number {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string" && value.trim()) {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return 0;
+}
+
+function toBoolean(value: unknown): boolean | null {
+  if (typeof value === "boolean") return value;
+  if (typeof value === "number") return value === 1 ? true : value === 0 ? false : null;
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+    if (normalized === "true" || normalized === "1") return true;
+    if (normalized === "false" || normalized === "0") return false;
+  }
+  return null;
+}
+
 export default function DashboardPage() {
   const { user } = useAuth();
   const { invoices, isLoading: invLoading } = useInvoices();
   const { customers, isLoading: custLoading } = useCustomers();
 
+  const resolveStatus = (invoice: (typeof invoices)[number]): InvoiceStatus => {
+    const raw = (
+      invoice.status ?? (invoice as { payment_status?: string }).payment_status
+    )
+      ?.toString()
+      .toLowerCase();
+
+    if (
+      raw === "paid" ||
+      raw === "unpaid" ||
+      raw === "overdue" ||
+      raw === "draft"
+    ) {
+      return raw;
+    }
+
+    const paidFlag = toBoolean((invoice as { is_paid?: unknown }).is_paid);
+    if (paidFlag === true) {
+      return "paid";
+    }
+
+    if (paidFlag === false) {
+      return "unpaid";
+    }
+
+    return "unpaid";
+  };
+
+  const resolveTotal = (invoice: (typeof invoices)[number]): number => {
+    const total = toNumber(invoice.total);
+    if (total > 0) return total;
+
+    const subtotal = toNumber(invoice.subtotal);
+    const tax = toNumber(invoice.tax);
+    return subtotal + tax;
+  };
+
   const stats = useMemo(() => {
     const unpaid = invoices.filter(
-      (i) => i.status === "unpaid" || i.status === "overdue",
+      (i) => {
+        const status = resolveStatus(i);
+        return status === "unpaid" || status === "overdue";
+      },
     );
     const totalRevenue = invoices
-      .filter((i) => i.status === "paid")
-      .reduce((s, i) => s + i.total, 0);
+      .filter((i) => resolveStatus(i) === "paid")
+      .reduce((s, i) => s + resolveTotal(i), 0);
     return {
       totalInvoices: invoices.length,
       totalCustomers: customers.length,
@@ -206,7 +266,7 @@ export default function DashboardPage() {
                   </div>
                   <div className="flex items-center gap-3 md:gap-4">
                     <StatusBadge
-                      status={(inv.status ?? "draft") as InvoiceStatus}
+                      status={resolveStatus(inv)}
                     />
                     <p className="hidden text-sm font-semibold text-foreground sm:block">
                       {formatCurrency(inv.total)}
