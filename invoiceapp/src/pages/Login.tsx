@@ -50,7 +50,7 @@ export default function LoginPage() {
       if (looksLikeInvalidLogin) {
         error(
           "Unable to sign in",
-          "This account does not exist yet, or the password is incorrect. Create a new account to continue.",
+          "This account does not exist yet, or the password is incorrect. Create a new account to sign-in.",
         );
       } else if (looksLikeNetworkIssue) {
         error(
