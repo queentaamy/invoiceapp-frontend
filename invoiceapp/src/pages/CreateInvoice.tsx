@@ -107,10 +107,10 @@ export default function CreateInvoicePage() {
         Back to Invoices
       </Link>
 
-      <form onSubmit={handleSubmit}>
-        <div className="grid lg:grid-cols-3 gap-6">
+      <form onSubmit={handleSubmit} className="w-full">
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]">
           {/* Main form */}
-          <div className="lg:col-span-2 flex flex-col gap-6">
+          <div className="flex min-w-0 flex-col gap-6">
             {/* Customer + dates */}
             <div className="rounded-xl bg-card p-5 shadow-none ring-1 ring-zinc-200 sm:p-6">
               <h3 className="mb-4 font-semibold text-foreground">
@@ -140,7 +140,7 @@ export default function CreateInvoicePage() {
 
             {/* Line items */}
             <div className="rounded-xl bg-card p-5 shadow-none ring-1 ring-zinc-200 sm:p-6">
-              <div className="mb-4 flex items-center justify-between border-b border-zinc-200 pb-3">
+              <div className="mb-4 flex flex-col gap-3 border-b border-zinc-200 pb-3 sm:flex-row sm:items-center sm:justify-between">
                 <h3 className="font-semibold text-foreground">Line Items</h3>
                 <Button
                   type="button"
@@ -148,98 +148,177 @@ export default function CreateInvoicePage() {
                   size="sm"
                   leftIcon={<Plus size={13} />}
                   onClick={addItem}
+                  className="w-full sm:w-auto"
                 >
                   Add Item
                 </Button>
               </div>
 
-              <div className="overflow-x-auto overflow-y-hidden">
-                <div className="min-w-[620px]">
-                  {/* Column headers */}
-                  <div className="mb-3 grid grid-cols-12 gap-2">
-                    <div className="col-span-6 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                      Description
-                    </div>
-                    <div className="col-span-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                      Qty
-                    </div>
-                    <div className="col-span-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                      Unit Price
-                    </div>
-                    <div className="col-span-1" />
+              <div className="hidden md:block">
+                {/* Column headers */}
+                <div className="mb-3 grid grid-cols-12 gap-3">
+                  <div className="col-span-6 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Description
                   </div>
-
-                  <div className="flex flex-col gap-2.5">
-                    {items.map((item, i) => (
-                      <div
-                        key={i}
-                        className="grid grid-cols-12 items-start gap-2 border-b border-zinc-200 pb-2 last:border-b-0 last:pb-0"
-                      >
-                        <div className="col-span-6">
-                          <Input
-                            placeholder="e.g. Web Design"
-                            value={item.item_name}
-                            onChange={(e) =>
-                              updateItem(i, "item_name", e.target.value)
-                            }
-                            error={errors[`item_${i}_name`]}
-                          />
-                        </div>
-                        <div className="col-span-2">
-                          <Input
-                            type="number"
-                            min="1"
-                            step="1"
-                            value={item.quantity}
-                            onChange={(e) =>
-                              updateItem(
-                                i,
-                                "quantity",
-                                toMinimumQuantity(e.target.value),
-                              )
-                            }
-                            error={errors[`item_${i}_qty`]}
-                          />
-                        </div>
-                        <div className="col-span-3">
-                          <Input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            placeholder="0.00"
-                            value={item.unit_price || ""}
-                            onChange={(e) =>
-                              updateItem(i, "unit_price", Number(e.target.value))
-                            }
-                            error={errors[`item_${i}_price`]}
-                          />
-                        </div>
-                        <div className="col-span-1 flex justify-center pt-0.5">
-                          <button
-                            type="button"
-                            onClick={() => removeItem(i)}
-                            disabled={items.length === 1}
-                            className="rounded-lg p-2 text-muted-foreground transition-all hover:bg-red-50 hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-30"
-                          >
-                            <Trash2 size={13} />
-                          </button>
-                        </div>
-
-                        {/* Subtotal for this line */}
-                        {item.item_name && item.unit_price > 0 && (
-                          <div className="col-span-12 -mt-1 px-1">
-                            <p className="text-xs text-muted-foreground">
-                              Line total:{" "}
-                              <span className="font-medium text-foreground/80">
-                                {formatCurrency(item.quantity * item.unit_price)}
-                              </span>
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    ))}
+                  <div className="col-span-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Qty
                   </div>
+                  <div className="col-span-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Unit Price
+                  </div>
+                  <div className="col-span-1" />
                 </div>
+
+                <div className="flex flex-col gap-3">
+                  {items.map((item, i) => (
+                    <div
+                      key={i}
+                      className="grid grid-cols-12 items-start gap-3 rounded-xl border border-zinc-200 p-4"
+                    >
+                      <div className="col-span-6 min-w-0">
+                        <Input
+                          placeholder="e.g. Web Design"
+                          value={item.item_name}
+                          onChange={(e) =>
+                            updateItem(i, "item_name", e.target.value)
+                          }
+                          error={errors[`item_${i}_name`]}
+                        />
+                      </div>
+                      <div className="col-span-2">
+                        <Input
+                          type="number"
+                          min="1"
+                          step="1"
+                          value={item.quantity}
+                          onChange={(e) =>
+                            updateItem(
+                              i,
+                              "quantity",
+                              toMinimumQuantity(e.target.value),
+                            )
+                          }
+                          error={errors[`item_${i}_qty`]}
+                        />
+                      </div>
+                      <div className="col-span-3">
+                        <Input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          placeholder="0.00"
+                          value={item.unit_price || ""}
+                          onChange={(e) =>
+                            updateItem(i, "unit_price", Number(e.target.value))
+                          }
+                          error={errors[`item_${i}_price`]}
+                        />
+                      </div>
+                      <div className="col-span-1 flex justify-center pt-0.5">
+                        <button
+                          type="button"
+                          onClick={() => removeItem(i)}
+                          disabled={items.length === 1}
+                          className="rounded-lg p-2 text-muted-foreground transition-all hover:bg-red-50 hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-30"
+                          aria-label={`Remove line item ${i + 1}`}
+                        >
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
+
+                      {item.item_name && item.unit_price > 0 && (
+                        <div className="col-span-12 -mt-1 px-1">
+                          <p className="text-xs text-muted-foreground">
+                            Line total:{" "}
+                            <span className="font-medium text-foreground/80">
+                              {formatCurrency(item.quantity * item.unit_price)}
+                            </span>
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-3 md:hidden">
+                {items.map((item, i) => (
+                  <div
+                    key={i}
+                    className="rounded-xl border border-zinc-200 p-4"
+                  >
+                    <div className="mb-4 flex items-center justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-semibold text-foreground">
+                          Item {i + 1}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Add the service or product details below.
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeItem(i)}
+                        disabled={items.length === 1}
+                        className="rounded-lg p-2 text-muted-foreground transition-all hover:bg-red-50 hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-30"
+                        aria-label={`Remove line item ${i + 1}`}
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+
+                    <div className="space-y-3">
+                      <Input
+                        label="Description"
+                        placeholder="e.g. Web Design"
+                        value={item.item_name}
+                        onChange={(e) =>
+                          updateItem(i, "item_name", e.target.value)
+                        }
+                        error={errors[`item_${i}_name`]}
+                      />
+
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <Input
+                          label="Quantity"
+                          type="number"
+                          min="1"
+                          step="1"
+                          value={item.quantity}
+                          onChange={(e) =>
+                            updateItem(
+                              i,
+                              "quantity",
+                              toMinimumQuantity(e.target.value),
+                            )
+                          }
+                          error={errors[`item_${i}_qty`]}
+                        />
+                        <Input
+                          label="Unit Price"
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          placeholder="0.00"
+                          value={item.unit_price || ""}
+                          onChange={(e) =>
+                            updateItem(i, "unit_price", Number(e.target.value))
+                          }
+                          error={errors[`item_${i}_price`]}
+                        />
+                      </div>
+
+                      <div className="rounded-lg bg-muted/50 px-3 py-2">
+                        <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                          Line total
+                        </p>
+                        <p className="text-sm font-semibold text-foreground">
+                          {formatCurrency(item.quantity * item.unit_price)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -256,9 +335,9 @@ export default function CreateInvoicePage() {
           </div>
 
           {/* Summary sidebar */}
-          <div className="flex flex-col gap-4">
+          <div className="flex min-w-0 flex-col gap-4">
             {/* Totals */}
-            <div className="rounded-xl bg-card p-5 shadow-none ring-1 ring-zinc-200 sm:p-6 lg:sticky lg:top-24">
+            <div className="rounded-xl bg-card p-5 shadow-none ring-1 ring-zinc-200 sm:p-6 xl:sticky xl:top-24">
               <div className="mb-4 flex items-center gap-2">
                 <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#eef0ff]">
                   <Calculator size={14} className="text-[#2B31E9]" />

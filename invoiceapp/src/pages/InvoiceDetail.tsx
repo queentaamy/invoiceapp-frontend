@@ -446,44 +446,87 @@ export default function InvoiceDetailPage() {
 
             {/* Line items */}
             <div className="mt-5">
-              <div className="grid grid-cols-12 border-b border-zinc-200 pb-2">
-                <div className="col-span-6 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Item
+              <div className="hidden sm:block">
+                <div className="grid grid-cols-12 gap-3 border-b border-zinc-200 pb-2">
+                  <div className="col-span-5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Item
+                  </div>
+                  <div className="col-span-2 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Qty
+                  </div>
+                  <div className="col-span-2 text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Unit
+                  </div>
+                  <div className="col-span-3 text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Total
+                  </div>
                 </div>
-                <div className="col-span-2 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Qty
-                </div>
-                <div className="col-span-2 text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Unit
-                </div>
-                <div className="col-span-2 text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Total
-                </div>
+
+                {(invoice.items ?? []).map((item, i) => (
+                  <div
+                    key={item.id ?? i}
+                    className="grid grid-cols-12 items-center gap-3 border-b border-zinc-200 py-3 last:border-0"
+                  >
+                    <div className="col-span-5 min-w-0">
+                      <p className="text-sm font-medium text-foreground">
+                        {item.item_name}
+                      </p>
+                    </div>
+                    <div className="col-span-2 text-center text-sm text-muted-foreground">
+                      {item.quantity}
+                    </div>
+                    <div className="col-span-2 text-right text-sm text-muted-foreground">
+                      {formatCurrency(item.unit_price)}
+                    </div>
+                    <div className="col-span-3 text-right text-sm font-semibold text-foreground">
+                      {formatCurrency(
+                        item.total_price ?? item.quantity * item.unit_price,
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
 
-              {(invoice.items ?? []).map((item, i) => (
-                <div
-                  key={item.id ?? i}
-                  className="grid grid-cols-12 items-center border-b border-zinc-200 py-3 last:border-0"
-                >
-                  <div className="col-span-6">
-                    <p className="text-sm font-medium text-foreground">
+              <div className="space-y-3 sm:hidden">
+                {(invoice.items ?? []).map((item, i) => (
+                  <div
+                    key={item.id ?? i}
+                    className="rounded-xl border border-zinc-200 p-4"
+                  >
+                    <p className="text-sm font-semibold text-foreground">
                       {item.item_name}
                     </p>
+                    <div className="mt-3 grid grid-cols-3 gap-3">
+                      <div className="rounded-lg bg-muted/40 px-3 py-2">
+                        <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                          Qty
+                        </p>
+                        <p className="mt-1 text-sm text-foreground">
+                          {item.quantity}
+                        </p>
+                      </div>
+                      <div className="rounded-lg bg-muted/40 px-3 py-2">
+                        <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                          Unit
+                        </p>
+                        <p className="mt-1 text-sm text-foreground">
+                          {formatCurrency(item.unit_price)}
+                        </p>
+                      </div>
+                      <div className="rounded-lg bg-muted/40 px-3 py-2">
+                        <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                          Total
+                        </p>
+                        <p className="mt-1 text-sm font-semibold text-foreground">
+                          {formatCurrency(
+                            item.total_price ?? item.quantity * item.unit_price,
+                          )}
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="col-span-2 text-center text-sm text-muted-foreground">
-                    {item.quantity}
-                  </div>
-                  <div className="col-span-2 text-right text-sm text-muted-foreground">
-                    {formatCurrency(item.unit_price)}
-                  </div>
-                  <div className="col-span-2 text-right text-sm font-semibold text-foreground">
-                    {formatCurrency(
-                      item.total_price ?? item.quantity * item.unit_price,
-                    )}
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
 
             {/* Totals */}
