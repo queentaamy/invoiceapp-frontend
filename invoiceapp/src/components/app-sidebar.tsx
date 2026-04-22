@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import {
-  Clock3,
   FileText,
   HelpCircle,
   LayoutDashboard,
@@ -74,16 +73,6 @@ const data = {
       name: "New Invoice",
       url: "/invoices/new",
       icon: PlusCircle,
-    },
-    {
-      name: "Open Invoices",
-      url: "/invoices",
-      icon: Clock3,
-    },
-    {
-      name: "Customer List",
-      url: "/customers",
-      icon: Users,
     },
   ],
 };

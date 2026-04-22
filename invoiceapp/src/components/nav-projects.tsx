@@ -7,7 +7,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export function NavProjects({
   projects,
@@ -18,20 +18,13 @@ export function NavProjects({
     icon: React.ComponentType<{ className?: string }>;
   }[];
 }) {
-  const { pathname } = useLocation();
-
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Quick Actions</SidebarGroupLabel>
       <SidebarMenu>
         {projects.map((item) => (
           <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton
-              asChild
-              isActive={
-                pathname === item.url || pathname.startsWith(`${item.url}/`)
-              }
-            >
+            <SidebarMenuButton asChild>
               <Link to={item.url}>
                 <item.icon />
                 <span>{item.name}</span>
