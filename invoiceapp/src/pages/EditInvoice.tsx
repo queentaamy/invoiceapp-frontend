@@ -80,7 +80,7 @@ export default function EditInvoicePage() {
               type="date"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              className="h-9 rounded-lg border border-zinc-200 bg-white px-3 text-sm transition-all focus:border-[#2B31E9] focus:outline-none focus:ring-2 focus:ring-[#2B31E9]/30"
+              className="h-9 rounded-lg border border-zinc-200 bg-white px-3 text-base transition-all focus:border-[#2B31E9] focus:outline-none focus:ring-2 focus:ring-[#2B31E9]/30"
             />
           </div>
 
@@ -91,7 +91,7 @@ export default function EditInvoicePage() {
               onChange={(e) => setNotes(e.target.value)}
               rows={3}
               placeholder="Additional notes..."
-              className="resize-none rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm transition-all focus:border-[#2B31E9] focus:outline-none focus:ring-2 focus:ring-[#2B31E9]/30"
+              className="resize-none rounded-lg border border-zinc-200 bg-white px-3 py-2 text-base transition-all focus:border-[#2B31E9] focus:outline-none focus:ring-2 focus:ring-[#2B31E9]/30"
             />
           </div>
 

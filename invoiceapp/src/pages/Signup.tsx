@@ -95,7 +95,7 @@ export default function SignupPage() {
                       placeholder="Full name"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="h-11 w-full rounded-xl border border-white/80 bg-white/78 pl-10 pr-3 text-sm text-ink-800 transition placeholder:text-ink-400 focus:border-[#2B31E9] focus:ring-2 focus:ring-[#2B31E9]/25 focus:outline-none sm:h-[46px] sm:text-[15px]"
+                      className="h-11 w-full rounded-xl border border-white/80 bg-white/78 pl-10 pr-3 text-base text-ink-800 transition placeholder:text-ink-400 focus:border-[#2B31E9] focus:ring-2 focus:ring-[#2B31E9]/25 focus:outline-none sm:h-[46px]"
                       required
                     />
                   </div>
@@ -110,7 +110,7 @@ export default function SignupPage() {
                       placeholder="Email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="h-11 w-full rounded-xl border border-white/80 bg-white/78 pl-10 pr-3 text-sm text-ink-800 transition placeholder:text-ink-400 focus:border-[#2B31E9] focus:ring-2 focus:ring-[#2B31E9]/25 focus:outline-none sm:h-[46px] sm:text-[15px]"
+                      className="h-11 w-full rounded-xl border border-white/80 bg-white/78 pl-10 pr-3 text-base text-ink-800 transition placeholder:text-ink-400 focus:border-[#2B31E9] focus:ring-2 focus:ring-[#2B31E9]/25 focus:outline-none sm:h-[46px]"
                       required
                     />
                   </div>
@@ -125,7 +125,7 @@ export default function SignupPage() {
                       placeholder="Password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="h-11 w-full rounded-xl border border-white/80 bg-white/78 pl-10 pr-10 text-sm text-ink-800 transition placeholder:text-ink-400 focus:border-[#2B31E9] focus:ring-2 focus:ring-[#2B31E9]/25 focus:outline-none sm:h-[46px] sm:text-[15px]"
+                      className="h-11 w-full rounded-xl border border-white/80 bg-white/78 pl-10 pr-10 text-base text-ink-800 transition placeholder:text-ink-400 focus:border-[#2B31E9] focus:ring-2 focus:ring-[#2B31E9]/25 focus:outline-none sm:h-[46px]"
                       required
                     />
                     <button
@@ -148,7 +148,7 @@ export default function SignupPage() {
                       placeholder="Confirm password"
                       value={confirm}
                       onChange={(e) => setConfirm(e.target.value)}
-                      className="h-11 w-full rounded-xl border border-white/80 bg-white/78 pl-10 pr-10 text-sm text-ink-800 transition placeholder:text-ink-400 focus:border-[#2B31E9] focus:ring-2 focus:ring-[#2B31E9]/25 focus:outline-none sm:h-[46px] sm:text-[15px]"
+                      className="h-11 w-full rounded-xl border border-white/80 bg-white/78 pl-10 pr-10 text-base text-ink-800 transition placeholder:text-ink-400 focus:border-[#2B31E9] focus:ring-2 focus:ring-[#2B31E9]/25 focus:outline-none sm:h-[46px]"
                       required
                     />
                     <button

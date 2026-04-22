@@ -40,7 +40,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             id={inputId}
             data-slot="input"
             className={cn(
-              "w-full h-9 rounded-lg border bg-white text-sm text-ink-900 placeholder:text-ink-400 transition-all",
+              "w-full h-9 rounded-lg border bg-white text-base text-ink-900 placeholder:text-ink-400 transition-all",
               "focus:outline-none focus:ring-2 focus:ring-[#2B31E9]/30 focus:border-[#2B31E9]",
               error ? "border-red-400" : "border-ink-200",
               leftAddon ? "pl-9" : "pl-3",
@@ -88,7 +88,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           ref={ref}
           id={selectId}
           className={cn(
-            "w-full h-9 rounded-lg border bg-white text-sm text-ink-900 px-3 transition-all appearance-none",
+            "w-full h-9 rounded-lg border bg-white text-base text-ink-900 px-3 transition-all appearance-none",
             "focus:outline-none focus:ring-2 focus:ring-[#2B31E9]/30 focus:border-[#2B31E9]",
             error ? "border-red-400" : "border-ink-200",
             className,
@@ -132,7 +132,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           ref={ref}
           id={textareaId}
           className={cn(
-            "w-full rounded-lg border bg-white text-sm text-ink-900 placeholder:text-ink-400 px-3 py-2 transition-all resize-none",
+            "w-full rounded-lg border bg-white px-3 py-2 text-base text-ink-900 placeholder:text-ink-400 transition-all resize-none",
             "focus:outline-none focus:ring-2 focus:ring-[#2B31E9]/30 focus:border-[#2B31E9]",
             error ? "border-red-400" : "border-ink-200",
             className,
